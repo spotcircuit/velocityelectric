@@ -83,7 +83,7 @@ export default async function ReviewsPage() {
             {/* Rating Breakdown */}
             <div className="space-y-2">
               {[5, 4, 3, 2, 1].map((stars) => {
-                const count = testimonials.filter((t) => t.rating === stars).length
+                const count = testimonials.filter((t: { rating: number }) => t.rating === stars).length
                 const percent = totalReviews > 0 ? (count / totalReviews) * 100 : 0
                 return (
                   <div key={stars} className="flex items-center gap-3">
@@ -130,7 +130,7 @@ export default async function ReviewsPage() {
       <Section>
         {testimonials.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
+            {testimonials.map((testimonial: { id: string; name: string; rating: number; text: string; location: string | null }) => (
               <ReviewCard
                 key={testimonial.id}
                 name={testimonial.name}
