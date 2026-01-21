@@ -74,7 +74,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service) => (
+          {services.map((service: { id: string; slug: string; title: string; excerpt: string; iconName: string }) => (
             <ServiceCard
               key={service.id}
               slug={service.slug}
@@ -127,7 +127,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
+            {testimonials.map((testimonial: { id: string; name: string; rating: number; text: string; location: string | null }) => (
               <ReviewCard
                 key={testimonial.id}
                 name={testimonial.name}
@@ -160,7 +160,7 @@ export default async function HomePage() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {config.citiesServed.slice(0, 8).map((city) => (
+          {config.citiesServed.slice(0, 8).map((city: string) => (
             <Link
               key={city}
               href={`/service-areas/${city.toLowerCase().replace(/\s+/g, '-')}`}
