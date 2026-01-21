@@ -13,7 +13,7 @@ async function main() {
     create: {
       id: 'site-config',
       businessName: 'Velocity Electric',
-      phone: '(703) 555-0123',
+      phone: '(571) 532-1594',
       email: 'info@velocityelectric.com',
       primaryArea: 'Northern Virginia',
       citiesServed: JSON.stringify([
