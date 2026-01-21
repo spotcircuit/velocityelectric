@@ -67,7 +67,7 @@ export async function generateStaticParams() {
     select: { slug: true },
   })
 
-  return services.map((service) => ({
+  return services.map((service: { slug: string }) => ({
     slug: service.slug,
   }))
 }

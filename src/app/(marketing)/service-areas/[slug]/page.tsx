@@ -62,7 +62,7 @@ export async function generateStaticParams() {
     select: { slug: true },
   })
 
-  return areas.map((area) => ({
+  return areas.map((area: { slug: string }) => ({
     slug: area.slug,
   }))
 }

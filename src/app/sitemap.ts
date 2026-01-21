@@ -63,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Service pages
-  const servicePages = services.map((service) => ({
+  const servicePages = services.map((service: { slug: string; updatedAt: Date }) => ({
     url: `${baseUrl}/services/${service.slug}`,
     lastModified: service.updatedAt,
     changeFrequency: 'monthly' as const,
@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Service area pages
-  const areaPages = serviceAreas.map((area) => ({
+  const areaPages = serviceAreas.map((area: { slug: string; updatedAt: Date }) => ({
     url: `${baseUrl}/service-areas/${area.slug}`,
     lastModified: area.updatedAt,
     changeFrequency: 'monthly' as const,

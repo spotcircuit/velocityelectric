@@ -149,7 +149,7 @@ export function BookingForm({ sourcePage, className }: BookingFormProps) {
             <Input
               id="phone"
               type="tel"
-              placeholder="(555) 123-4567"
+              placeholder="(571) 532-1594"
               {...register('phone')}
               error={errors.phone?.message}
               className="mt-1"
