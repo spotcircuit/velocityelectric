@@ -35,7 +35,7 @@ export default async function ReviewsPage() {
     totalReviews > 0
       ? testimonials.reduce((acc: number, t: { rating: number }) => acc + t.rating, 0) / totalReviews
       : 5
-  const fiveStarCount = testimonials.filter((t) => t.rating === 5).length
+  const fiveStarCount = testimonials.filter((t: { rating: number }) => t.rating === 5).length
   const fiveStarPercent = totalReviews > 0 ? (fiveStarCount / totalReviews) * 100 : 100
 
   return (

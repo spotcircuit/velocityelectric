@@ -54,20 +54,17 @@ export function Header({ businessName, phone }: HeaderProps) {
       )}
     >
       <Container>
-        <div className="flex h-16 md:h-20 items-center justify-between">
+        <div className="flex h-24 md:h-32 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center">
             <Image
-              src="/brand/logo.svg"
+              src="/images/logo.jpg"
               alt={businessName}
-              width={48}
-              height={48}
-              className="h-10 w-auto md:h-12"
+              width={400}
+              height={120}
+              className="h-24 w-auto md:h-32"
               priority
             />
-            <span className="hidden sm:block font-bold text-lg text-primary">
-              {businessName}
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
