@@ -46,7 +46,7 @@ export default async function AdminPromosPage() {
 
       {promos.length > 0 ? (
         <div className="grid gap-4">
-          {promos.map((promo) => {
+          {promos.map((promo: { id: string; title: string; description: string; code: string | null; expiresAt: Date | null; published: boolean; sortOrder: number }) => {
             const isExpired = promo.expiresAt && new Date(promo.expiresAt) < new Date()
             return (
               <Card key={promo.id}>

@@ -46,7 +46,7 @@ export default async function AdminTestimonialsPage() {
 
       {testimonials.length > 0 ? (
         <div className="grid gap-4">
-          {testimonials.map((testimonial) => (
+          {testimonials.map((testimonial: { id: string; name: string; text: string; rating: number; location: string | null; published: boolean; createdAt: Date }) => (
             <Card key={testimonial.id}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">

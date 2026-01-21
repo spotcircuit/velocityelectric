@@ -38,7 +38,7 @@ export default async function AdminLeadsPage() {
 
       {leads.length > 0 ? (
         <div className="grid gap-4">
-          {leads.map((lead) => (
+          {leads.map((lead: { id: string; name: string; phone: string; email: string | null; city: string | null; serviceRequested: string | null; message: string | null; sourcePage: string; createdAt: Date }) => (
             <Card key={lead.id}>
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

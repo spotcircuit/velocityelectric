@@ -46,7 +46,7 @@ export default async function AdminServicesPage() {
 
       {services.length > 0 ? (
         <div className="grid gap-4">
-          {services.map((service) => (
+          {services.map((service: { id: string; title: string; slug: string; sortOrder: number; published: boolean }) => (
             <Card key={service.id}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">

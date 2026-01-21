@@ -158,7 +158,7 @@ export default async function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.recentLeads.map((lead) => (
+                  {stats.recentLeads.map((lead: { id: string; name: string; phone: string; serviceRequested: string | null; createdAt: Date }) => (
                     <tr key={lead.id} className="border-b border-border last:border-0">
                       <td className="py-3 px-4 font-medium">{lead.name}</td>
                       <td className="py-3 px-4">

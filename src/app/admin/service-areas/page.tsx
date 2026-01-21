@@ -46,7 +46,7 @@ export default async function AdminServiceAreasPage() {
 
       {areas.length > 0 ? (
         <div className="grid gap-4">
-          {areas.map((area) => (
+          {areas.map((area: { id: string; city: string; state: string; slug: string; published: boolean }) => (
             <Card key={area.id}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
