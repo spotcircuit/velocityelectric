@@ -82,7 +82,7 @@ export default async function ServicePage({ params }: Props) {
 
   const faqs = parseJsonSafe<FAQ[]>(service.faqsJson, [])
   const Icon = (Icons[service.iconName as keyof typeof Icons] as LucideIcon) || Icons.Zap
-  const otherServices = services.filter((s) => s.slug !== service.slug)
+  const otherServices = services.filter((s: { slug: string; title: string }) => s.slug !== service.slug)
 
   const benefits = [
     { icon: Shield, title: 'Licensed & Insured', text: 'Full protection for your home and family' },
