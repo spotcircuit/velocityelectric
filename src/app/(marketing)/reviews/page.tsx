@@ -33,7 +33,7 @@ export default async function ReviewsPage() {
   const totalReviews = testimonials.length
   const avgRating =
     totalReviews > 0
-      ? testimonials.reduce((acc, t) => acc + t.rating, 0) / totalReviews
+      ? testimonials.reduce((acc: number, t) => acc + t.rating, 0) / totalReviews
       : 5
   const fiveStarCount = testimonials.filter((t) => t.rating === 5).length
   const fiveStarPercent = totalReviews > 0 ? (fiveStarCount / totalReviews) * 100 : 100
