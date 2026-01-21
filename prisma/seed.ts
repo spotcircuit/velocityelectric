@@ -30,7 +30,7 @@ async function main() {
       ]),
       hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
       emergencyEnabled: true,
-      licenseNumber: 'VA License #2705123456',
+      licenseNumber: 'VA Master Electrician #2710047894',
       googleReviewUrl: '',
       address: '503 Carlisle Dr. Ste 100, Herndon, VA 20170',
       tagline: 'Your Trusted Master Electrician',

@@ -23,7 +23,7 @@ const defaultConfig: SiteConfigData = {
   citiesServed: ['Springfield', 'Riverside', 'Oakville', 'Lakewood', 'Hillcrest'],
   hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
   emergencyEnabled: true,
-  licenseNumber: 'LIC #12345',
+  licenseNumber: 'VA Master Electrician #2710047894',
   googleReviewUrl: '',
   address: '123 Main Street, Springfield, ST 12345',
   tagline: 'Your Trusted Master Electrician',
