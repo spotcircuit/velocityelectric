@@ -49,7 +49,7 @@ export default async function ServicesPage() {
       <Section>
         {services.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
+            {services.map((service: { id: string; slug: string; title: string; excerpt: string; iconName: string }) => (
               <ServiceCard
                 key={service.id}
                 slug={service.slug}

@@ -65,7 +65,7 @@ export default async function SpecialsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activePromos.map((promo) => (
+              {activePromos.map((promo: { id: string; title: string; description: string; code: string | null; expiresAt: Date | null }) => (
                 <PromoCard
                   key={promo.id}
                   title={promo.title}
@@ -117,7 +117,7 @@ export default async function SpecialsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {expiredPromos.slice(0, 3).map((promo) => (
+            {expiredPromos.slice(0, 3).map((promo: { id: string; title: string; description: string; code: string | null; expiresAt: Date | null }) => (
               <PromoCard
                 key={promo.id}
                 title={promo.title}

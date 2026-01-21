@@ -283,7 +283,7 @@ export default async function ServiceAreaPage({ params }: Props) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.slice(0, 8).map((service) => (
+          {services.slice(0, 8).map((service: { id: string; slug: string; title: string; excerpt: string; iconName: string }) => (
             <ServiceCard
               key={service.id}
               slug={service.slug}
@@ -349,7 +349,7 @@ export default async function ServiceAreaPage({ params }: Props) {
           </div>
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-border">
             <BookingForm
-              services={services.map((s) => ({ slug: s.slug, title: s.title }))}
+              services={services.map((s: { slug: string; title: string }) => ({ slug: s.slug, title: s.title }))}
               sourcePage={`/service-areas/${area.slug}`}
             />
           </div>
@@ -366,7 +366,7 @@ export default async function ServiceAreaPage({ params }: Props) {
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {otherAreas.map((otherArea) => (
+            {otherAreas.map((otherArea: { id: string; slug: string; city: string; state: string }) => (
               <Link
                 key={otherArea.id}
                 href={`/service-areas/${otherArea.slug}`}

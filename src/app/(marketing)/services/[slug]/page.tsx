@@ -302,7 +302,7 @@ export default async function ServicePage({ params }: Props) {
               <CardContent className="p-6">
                 <h3 className="font-bold text-primary mb-4">Related Services</h3>
                 <ul className="space-y-3">
-                  {otherServices.slice(0, 6).map((s) => (
+                  {otherServices.slice(0, 6).map((s: { slug: string; title: string }) => (
                     <li key={s.slug}>
                       <Link
                         href={`/services/${s.slug}`}
@@ -328,7 +328,7 @@ export default async function ServicePage({ params }: Props) {
                   Areas We Serve
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {serviceAreas.slice(0, 8).map((area) => (
+                  {serviceAreas.slice(0, 8).map((area: { slug: string; city: string }) => (
                     <Link
                       key={area.slug}
                       href={`/service-areas/${area.slug}`}
@@ -390,7 +390,7 @@ export default async function ServicePage({ params }: Props) {
           </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {serviceAreas.map((area) => (
+          {serviceAreas.map((area: { slug: string; city: string; state: string }) => (
             <Link
               key={area.slug}
               href={`/service-areas/${area.slug}`}
@@ -431,7 +431,7 @@ export default async function ServicePage({ params }: Props) {
             ...(faqs.length > 0 && {
               mainEntity: {
                 '@type': 'FAQPage',
-                mainEntity: faqs.map((faq) => ({
+                mainEntity: faqs.map((faq: FAQ) => ({
                   '@type': 'Question',
                   name: faq.question,
                   acceptedAnswer: {

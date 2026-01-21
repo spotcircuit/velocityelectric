@@ -59,7 +59,7 @@ export default async function ServiceAreasPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {areas.map((area) => (
+              {areas.map((area: { id: string; slug: string; city: string; state: string; intro: string }) => (
                 <Link key={area.id} href={`/service-areas/${area.slug}`}>
                   <Card className="h-full group cursor-pointer">
                     <CardContent className="p-6">
