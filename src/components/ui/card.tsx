@@ -4,13 +4,14 @@ import { cn } from '@/lib/utils'
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
       'rounded-2xl bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover',
       className
     )}
+    style={{ border: '1px solid #E3E8F0', ...style }}
     {...props}
   />
 ))

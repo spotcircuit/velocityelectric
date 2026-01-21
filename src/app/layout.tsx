@@ -2,8 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { Toaster } from '@/components/ui/toaster'
-import { GA_TRACKING_ID } from '@/lib/analytics'
 import './globals.css'
+
+const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID
 
 const inter = Inter({
   subsets: ['latin'],
@@ -51,7 +52,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <head>
+      <body className="min-h-screen bg-bg font-sans antialiased">
         {GA_TRACKING_ID && (
           <>
             <Script
@@ -62,26 +63,12 @@ export default function RootLayout({
               id="google-analytics"
               strategy="afterInteractive"
               dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${GA_TRACKING_ID}', {
-                    page_path: window.location.pathname,
-                  });
-                `,
+                __html: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA_TRACKING_ID}', {page_path: window.location.pathname});`,
               }}
             />
           </>
         )}
-      </head>
-      <body className="min-h-screen bg-bg font-sans antialiased">
-        <a
-          href="#main-content"
-          className="skip-link"
-        >
-          Skip to main content
-        </a>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         {children}
         <Toaster />
       </body>

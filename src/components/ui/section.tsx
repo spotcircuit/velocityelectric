@@ -16,15 +16,16 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
       background = 'default',
       padding = 'default',
       children,
+      style,
       ...props
     },
     ref
   ) => {
-    const backgrounds = {
-      default: 'bg-bg',
-      surface: 'bg-surface',
-      primary: 'bg-primary text-white',
-      accent: 'bg-accent-soft',
+    const backgroundStyles = {
+      default: { backgroundColor: '#FFFFFF' },
+      surface: { backgroundColor: '#F6F8FB' },
+      primary: { backgroundColor: '#0B1F3B', color: '#FFFFFF' },
+      accent: { backgroundColor: '#EAF3FF' },
     }
 
     const paddings = {
@@ -37,7 +38,8 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
     return (
       <section
         ref={ref}
-        className={cn(backgrounds[background], paddings[padding], className)}
+        className={cn(paddings[padding], className)}
+        style={{ ...backgroundStyles[background], ...style }}
         {...props}
       >
         <Container size={containerSize}>{children}</Container>

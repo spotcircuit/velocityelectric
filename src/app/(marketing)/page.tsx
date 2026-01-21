@@ -61,9 +61,12 @@ export default async function HomePage() {
       </Section>
 
       {/* Services Section */}
-      <Section>
+      <Section background="surface">
         <div className="text-center mb-12">
-          <h2 className="mb-4">Our Electrical Services</h2>
+          <span className="inline-block px-4 py-1 bg-accent-soft text-accent font-semibold text-sm rounded-full mb-4">
+            Our Services
+          </span>
+          <h2 className="mb-4">Professional Electrical Services</h2>
           <p className="text-lg text-muted max-w-2xl mx-auto">
             From simple repairs to complex installations, our licensed electricians
             handle all your residential and commercial electrical needs.
@@ -161,7 +164,7 @@ export default async function HomePage() {
             <Link
               key={city}
               href={`/service-areas/${city.toLowerCase().replace(/\s+/g, '-')}`}
-              className="px-4 py-2 bg-white rounded-full text-sm font-medium text-primary hover:bg-accent hover:text-white transition-colors shadow-sm"
+              className="city-link-pill"
             >
               {city}
             </Link>

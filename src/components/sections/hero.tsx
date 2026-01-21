@@ -25,7 +25,10 @@ export function Hero({ businessName, phone, tagline, licenseNumber }: HeroProps)
   }
 
   return (
-    <section className="relative bg-gradient-to-br from-primary via-primary to-primary-dark pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+    <section
+      className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden"
+      style={{ background: 'linear-gradient(to bottom right, #0B1F3B, #071528)' }}
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -53,12 +56,12 @@ export function Hero({ businessName, phone, tagline, licenseNumber }: HeroProps)
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-balance">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-balance" style={{ color: '#FFFFFF' }}>
             {tagline}
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl">
+          <p className="text-lg md:text-xl mb-8 max-w-2xl" style={{ color: '#D1D5DB' }}>
             Professional electrical services for your home and business.
             Fast, reliable, and backed by our satisfaction guarantee.
           </p>

@@ -29,16 +29,21 @@ export default async function ServicesPage() {
   return (
     <>
       {/* Hero */}
-      <Section className="pt-24 md:pt-32 bg-gradient-to-br from-primary to-primary-dark">
-        <div className="max-w-3xl">
-          <h1 className="text-white mb-4">Our Electrical Services</h1>
-          <p className="text-xl text-gray-300">
+      <section
+        className="pt-24 md:pt-32 pb-12 md:pb-16"
+        style={{ background: 'linear-gradient(to bottom right, #0B1F3B, #071528)' }}
+      >
+        <div className="container-custom max-w-3xl">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#FFFFFF' }}>
+            Our Electrical Services
+          </h1>
+          <p className="text-xl" style={{ color: '#D1D5DB' }}>
             From simple repairs to complex installations, our licensed electricians
             provide comprehensive electrical services for residential and commercial
             properties.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Services Grid */}
       <Section>

@@ -32,15 +32,20 @@ export default async function ContactPage() {
   return (
     <>
       {/* Hero */}
-      <Section className="pt-24 md:pt-32 bg-gradient-to-br from-primary to-primary-dark">
-        <div className="max-w-3xl">
-          <h1 className="text-white mb-4">Contact Us</h1>
-          <p className="text-xl text-gray-300">
+      <section
+        className="pt-24 md:pt-32 pb-12 md:pb-16"
+        style={{ background: 'linear-gradient(to bottom right, #0B1F3B, #071528)' }}
+      >
+        <div className="container-custom max-w-3xl">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#FFFFFF' }}>
+            Contact Us
+          </h1>
+          <p className="text-xl" style={{ color: '#D1D5DB' }}>
             Ready to get started? Fill out the form below or give us a call.
             We offer free estimates and same-day service for most jobs.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Contact Form & Info */}
       <Section>

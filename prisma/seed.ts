@@ -13,29 +13,29 @@ async function main() {
     create: {
       id: 'site-config',
       businessName: 'Velocity Electric',
-      phone: '(555) 123-4567',
+      phone: '(703) 555-0123',
       email: 'info@velocityelectric.com',
-      primaryArea: 'Metro Area',
+      primaryArea: 'Northern Virginia',
       citiesServed: JSON.stringify([
-        'Springfield',
-        'Riverside',
-        'Oakville',
-        'Lakewood',
-        'Hillcrest',
-        'Meadowbrook',
-        'Fairview',
-        'Cedar Heights',
-        'Pinewood',
-        'Westfield',
+        'Ashburn',
+        'Fairfax',
+        'Vienna',
+        'Sterling',
+        'Leesburg',
+        'Purcellville',
+        'Winchester',
+        'Reston',
+        'Manassas',
+        'Woodbridge',
       ]),
       hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
       emergencyEnabled: true,
-      licenseNumber: 'LIC #12345',
+      licenseNumber: 'VA License #2705123456',
       googleReviewUrl: '',
-      address: '123 Main Street, Springfield, ST 12345',
+      address: '503 Carlisle Dr. Ste 100, Herndon, VA 20170',
       tagline: 'Your Trusted Master Electrician',
       aboutText:
-        'With over 20 years of experience, Velocity Electric has been proudly serving the Metro Area community with reliable, professional electrical services. As a licensed Master Electrician, we bring expertise, integrity, and a commitment to excellence to every job. Our team treats your home like our own, ensuring clean, courteous service every time.',
+        'With over 20 years of experience, Velocity Electric has been proudly serving Northern Virginia with reliable, professional electrical services. As a licensed Master Electrician, we bring expertise, integrity, and a commitment to excellence to every job. Our team treats your home like our own, ensuring clean, courteous service every time.',
     },
   })
 
@@ -463,70 +463,70 @@ async function main() {
       name: 'Jennifer M.',
       rating: 5,
       text: "Velocity Electric did an amazing job upgrading our panel. The team was professional, explained everything clearly, and finished on time. Our house finally has enough power for all our modern appliances. Highly recommend!",
-      location: 'Springfield',
+      location: 'Ashburn',
       published: true,
     },
     {
       name: 'Robert K.',
       rating: 5,
       text: 'Called them for an emergency at 10pm when our power went out. They arrived within an hour and had everything fixed. Fair pricing even for late-night work. These guys are the real deal.',
-      location: 'Riverside',
+      location: 'Fairfax',
       published: true,
     },
     {
       name: 'Sarah L.',
       rating: 5,
       text: 'We had recessed lights installed throughout our main floor and the results are stunning. Clean work, respectful of our home, and the price was exactly what was quoted. Will definitely use again.',
-      location: 'Oakville',
+      location: 'Vienna',
       published: true,
     },
     {
       name: 'Michael D.',
       rating: 5,
       text: 'Finally got a Level 2 EV charger installed in our garage. The electrician walked me through all my options and even helped me apply for the utility rebate. Excellent service from start to finish.',
-      location: 'Lakewood',
+      location: 'Sterling',
       published: true,
     },
     {
       name: 'Patricia H.',
       rating: 5,
       text: 'Very impressed with their knowledge and professionalism. They troubleshot a tricky wiring issue that two other electricians couldn\'t figure out. Fixed it in one visit. Worth every penny.',
-      location: 'Hillcrest',
+      location: 'Leesburg',
       published: true,
     },
     {
       name: 'David W.',
       rating: 5,
       text: 'Great experience with our whole-house surge protector installation. The electrician was knowledgeable, efficient, and cleaned up perfectly. Good to have peace of mind protecting our electronics.',
-      location: 'Meadowbrook',
+      location: 'Purcellville',
       published: true,
     },
     {
       name: 'Linda B.',
       rating: 5,
       text: 'They installed a standby generator for us before hurricane season. The automatic transfer switch works flawlessly. Lost power twice already and the generator kicked in immediately both times.',
-      location: 'Fairview',
+      location: 'Winchester',
       published: true,
     },
     {
       name: 'James T.',
       rating: 5,
       text: 'Had them do a complete smart home upgrade - switches, thermostats, doorbell. They made sure everything worked together perfectly. My wife and I love controlling everything from our phones now.',
-      location: 'Cedar Heights',
+      location: 'Reston',
       published: true,
     },
     {
       name: 'Nancy S.',
       rating: 5,
       text: 'Used Velocity Electric for our restaurant buildout. They worked around our schedule, passed inspection first time, and the lighting looks fantastic. Definitely recommend for commercial work.',
-      location: 'Springfield',
+      location: 'Manassas',
       published: true,
     },
     {
       name: 'Thomas R.',
       rating: 5,
       text: 'Honest, reliable, and fairly priced. Been using them for years for all our electrical needs. They always show up when they say they will and stand behind their work. Can\'t ask for more.',
-      location: 'Westfield',
+      location: 'Woodbridge',
       published: true,
     },
   ]
@@ -535,169 +535,169 @@ async function main() {
     await prisma.testimonial.create({ data: testimonial })
   }
 
-  // Service Areas
+  // Service Areas - Northern Virginia cities
   console.log('📍 Creating service areas...')
   const serviceAreas = [
     {
-      city: 'Springfield',
-      state: 'State',
-      slug: 'springfield',
+      city: 'Ashburn',
+      state: 'VA',
+      slug: 'ashburn',
       intro:
-        'Velocity Electric proudly serves Springfield residents and businesses with professional electrical services. As your local Master Electrician, we understand the unique electrical needs of Springfield homes, from historic properties to new construction.',
+        'Velocity Electric proudly serves Ashburn residents and businesses with professional electrical services. As your local Master Electrician, we understand the unique electrical needs of Ashburn homes, from data center corridor properties to the newest developments in Loudoun County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Same-Day Service',
           description:
-            'Most Springfield service calls are completed same-day or next-day.',
+            'Most Ashburn service calls are completed same-day or next-day.',
         },
         {
-          title: 'Local Expertise',
+          title: 'Data Center Expertise',
           description:
-            'We know Springfield homes and common electrical issues in the area.',
+            'We understand the high-power demands of Ashburn area homes and businesses.',
         },
         {
           title: 'Community Trusted',
           description:
-            'Serving Springfield families and businesses for over 20 years.',
+            'Serving Ashburn families and businesses for over 20 years.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'Do you serve all of Springfield?',
+          question: 'Do you serve all of Ashburn?',
           answer:
-            'Yes! We serve all Springfield neighborhoods including downtown, suburbs, and surrounding areas.',
+            'Yes! We serve all Ashburn neighborhoods including Broadlands, Ashburn Village, Ashburn Farm, Brambleton, and surrounding areas.',
         },
         {
-          question: 'How quickly can you come to Springfield?',
+          question: 'How quickly can you come to Ashburn?',
           answer:
-            'We typically offer same-day or next-day service for Springfield addresses. Emergency calls are prioritized.',
+            'We typically offer same-day or next-day service for Ashburn addresses. Emergency calls are prioritized.',
         },
         {
-          question: 'Are there any extra charges for Springfield service?',
+          question: 'Are there any extra charges for Ashburn service?',
           answer:
-            "No! Springfield is in our primary service area with no travel fees or extra charges.",
+            "No! Ashburn is in our primary service area with no travel fees or extra charges.",
         },
         {
-          question: 'Do you work on older Springfield homes?',
+          question: 'Do you work on new construction in Ashburn?',
           answer:
-            'Absolutely. We have extensive experience with older homes including knob-and-tube rewiring, panel upgrades, and bringing electrical systems up to code.',
+            'Absolutely. We work on both new construction and existing homes throughout Loudoun County.',
         },
         {
-          question: 'Can you help with permit requirements in Springfield?',
+          question: 'Can you help with permit requirements in Ashburn?',
           answer:
-            'Yes, we handle all permit applications and inspections. We\'re familiar with Springfield building department requirements.',
+            'Yes, we handle all permit applications and inspections. We\'re familiar with Loudoun County building department requirements.',
         },
       ]),
       published: true,
     },
     {
-      city: 'Riverside',
-      state: 'State',
-      slug: 'riverside',
+      city: 'Fairfax',
+      state: 'VA',
+      slug: 'fairfax',
       intro:
-        'Looking for a trusted electrician in Riverside? Velocity Electric provides comprehensive electrical services to Riverside homes and businesses. Our licensed electricians deliver quality workmanship and outstanding customer service.',
+        'Looking for a trusted electrician in Fairfax? Velocity Electric provides comprehensive electrical services to Fairfax homes and businesses. Our licensed electricians deliver quality workmanship and outstanding customer service throughout Fairfax County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Fast Response',
-          description: 'Quick service for all Riverside electrical needs.',
+          description: 'Quick service for all Fairfax electrical needs.',
         },
         {
           title: 'Licensed & Insured',
-          description: 'Fully licensed Master Electrician serving Riverside.',
+          description: 'Fully licensed Master Electrician serving Fairfax.',
         },
         {
           title: 'Fair Pricing',
-          description: 'Competitive rates with upfront pricing for Riverside residents.',
+          description: 'Competitive rates with upfront pricing for Fairfax residents.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'What areas of Riverside do you service?',
+          question: 'What areas of Fairfax do you service?',
           answer:
-            'We serve all of Riverside including residential neighborhoods, commercial districts, and industrial areas.',
+            'We serve all of Fairfax including City of Fairfax, Fair Oaks, Burke, Fairfax Station, and surrounding neighborhoods.',
         },
         {
-          question: 'Do you offer emergency service in Riverside?',
+          question: 'Do you offer emergency service in Fairfax?',
           answer:
-            'Yes! We provide 24/7 emergency electrical service to Riverside customers.',
+            'Yes! We provide 24/7 emergency electrical service to Fairfax customers.',
         },
         {
-          question: 'How do I schedule service in Riverside?',
+          question: 'How do I schedule service in Fairfax?',
           answer:
-            'Call us or fill out our online form. We typically can schedule Riverside appointments within 1-2 business days.',
+            'Call us or fill out our online form. We typically can schedule Fairfax appointments within 1-2 business days.',
         },
         {
-          question: 'Are your Riverside electricians licensed?',
+          question: 'Are your Fairfax electricians licensed?',
           answer:
             'Yes, all our electricians are licensed, insured, and background-checked.',
         },
         {
-          question: 'Do you do commercial work in Riverside?',
+          question: 'Do you do commercial work in Fairfax?',
           answer:
-            'Absolutely! We serve Riverside businesses of all sizes from small retail to large commercial properties.',
+            'Absolutely! We serve Fairfax businesses of all sizes from small retail to large commercial properties.',
         },
       ]),
       published: true,
     },
     {
-      city: 'Oakville',
-      state: 'State',
-      slug: 'oakville',
+      city: 'Vienna',
+      state: 'VA',
+      slug: 'vienna',
       intro:
-        'Velocity Electric is Oakville\'s preferred electrical contractor. We provide residential and commercial electrical services with a focus on quality, safety, and customer satisfaction.',
+        'Velocity Electric is Vienna\'s preferred electrical contractor. We provide residential and commercial electrical services with a focus on quality, safety, and customer satisfaction in this historic Northern Virginia town.',
       highlightsJson: JSON.stringify([
         {
           title: 'Quality Work',
-          description: 'Meticulous attention to detail on every Oakville job.',
+          description: 'Meticulous attention to detail on every Vienna job.',
         },
         {
-          title: 'Safety First',
-          description: 'All work meets or exceeds electrical codes.',
+          title: 'Historic Home Expertise',
+          description: 'Experience with older Vienna homes and updated wiring.',
         },
         {
           title: 'Satisfaction Guaranteed',
-          description: '100% satisfaction guarantee on all Oakville services.',
+          description: '100% satisfaction guarantee on all Vienna services.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'Why choose Velocity Electric for Oakville homes?',
+          question: 'Why choose Velocity Electric for Vienna homes?',
           answer:
-            'We combine technical expertise with personalized service. Our electricians treat your Oakville home with respect and keep work areas clean.',
+            'We combine technical expertise with personalized service. Our electricians treat your Vienna home with respect and keep work areas clean.',
         },
         {
-          question: 'What electrical services do you offer in Oakville?',
+          question: 'What electrical services do you offer in Vienna?',
           answer:
             'We offer full-service electrical including repairs, installations, panel upgrades, lighting, EV chargers, and more.',
         },
         {
-          question: 'Can you upgrade my Oakville home\'s electrical panel?',
+          question: 'Can you upgrade my Vienna home\'s electrical panel?',
           answer:
-            'Yes! Panel upgrades are one of our specialties. We can upgrade your Oakville home to 200 amps or higher.',
+            'Yes! Panel upgrades are one of our specialties. We can upgrade your Vienna home to 200 amps or higher.',
         },
         {
-          question: 'Do you install ceiling fans in Oakville?',
+          question: 'Do you work on older Vienna homes?',
           answer:
-            'Yes, we install all types of ceiling fans in Oakville homes. We ensure proper support and balanced operation.',
+            'Yes, we have extensive experience with older homes including knob-and-tube rewiring and bringing electrical systems up to code.',
         },
         {
-          question: 'How much does an electrician cost in Oakville?',
+          question: 'How much does an electrician cost in Vienna?',
           answer:
-            'Our rates are competitive with other Oakville electricians. We provide upfront pricing so you know exactly what to expect.',
+            'Our rates are competitive with other Vienna electricians. We provide upfront pricing so you know exactly what to expect.',
         },
       ]),
       published: true,
     },
     {
-      city: 'Lakewood',
-      state: 'State',
-      slug: 'lakewood',
+      city: 'Sterling',
+      state: 'VA',
+      slug: 'sterling',
       intro:
-        'Serving Lakewood with expert electrical services since 2004. Whether you need a simple repair or a complete rewire, Velocity Electric has the skills and experience to get the job done right.',
+        'Serving Sterling with expert electrical services. Whether you need a simple repair or a complete rewire, Velocity Electric has the skills and experience to get the job done right in Sterling and eastern Loudoun County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Experienced Team',
-          description: '20+ years serving Lakewood families.',
+          description: '20+ years serving Sterling families.',
         },
         {
           title: 'Wide Service Range',
@@ -710,27 +710,27 @@ async function main() {
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'How long have you been serving Lakewood?',
+          question: 'How long have you been serving Sterling?',
           answer:
-            'We\'ve been proudly serving Lakewood homeowners and businesses for over 20 years.',
+            'We\'ve been proudly serving Sterling homeowners and businesses for over 20 years.',
         },
         {
-          question: 'Do you offer free estimates in Lakewood?',
+          question: 'Do you offer free estimates in Sterling?',
           answer:
-            'Yes! We provide free estimates for most Lakewood electrical projects.',
+            'Yes! We provide free estimates for most Sterling electrical projects.',
         },
         {
-          question: 'Can you install an EV charger at my Lakewood home?',
+          question: 'Can you install an EV charger at my Sterling home?',
           answer:
-            'Absolutely! We\'re certified to install all major EV charger brands in Lakewood.',
+            'Absolutely! We\'re certified to install all major EV charger brands in Sterling.',
         },
         {
-          question: 'Do you work on weekends in Lakewood?',
+          question: 'Do you work on weekends in Sterling?',
           answer:
-            'Yes, we offer Saturday appointments for Lakewood customers.',
+            'Yes, we offer Saturday appointments for Sterling customers.',
         },
         {
-          question: 'Are you familiar with Lakewood building codes?',
+          question: 'Are you familiar with Loudoun County building codes?',
           answer:
             'Yes, we\'re well-versed in local codes and handle all permits and inspections.',
         },
@@ -738,48 +738,48 @@ async function main() {
       published: true,
     },
     {
-      city: 'Hillcrest',
-      state: 'State',
-      slug: 'hillcrest',
+      city: 'Leesburg',
+      state: 'VA',
+      slug: 'leesburg',
       intro:
-        'Hillcrest residents trust Velocity Electric for reliable electrical services. Our team of licensed electricians provides prompt, professional service for all your electrical needs.',
+        'Leesburg residents trust Velocity Electric for reliable electrical services. Our team of licensed electricians provides prompt, professional service for all your electrical needs in historic Leesburg and surrounding areas.',
       highlightsJson: JSON.stringify([
         {
           title: 'Reliable Service',
-          description: 'On-time, every time for Hillcrest customers.',
+          description: 'On-time, every time for Leesburg customers.',
         },
         {
-          title: 'Professional Team',
-          description: 'Courteous, skilled electricians.',
+          title: 'Historic District Experience',
+          description: 'Skilled work in Leesburg\'s historic downtown.',
         },
         {
           title: 'Prompt Response',
-          description: 'Fast scheduling for Hillcrest area.',
+          description: 'Fast scheduling for Leesburg area.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'What\'s your response time for Hillcrest?',
+          question: 'What\'s your response time for Leesburg?',
           answer:
-            'We typically schedule Hillcrest appointments within 1-2 days. Emergency calls receive priority.',
+            'We typically schedule Leesburg appointments within 1-2 days. Emergency calls receive priority.',
         },
         {
-          question: 'Do you service both old and new Hillcrest homes?',
+          question: 'Do you service both old and new Leesburg homes?',
           answer:
-            'Yes! We work on homes of all ages, from historic Hillcrest properties to brand new construction.',
+            'Yes! We work on homes of all ages, from historic Leesburg properties to brand new construction in Lansdowne and River Creek.',
         },
         {
-          question: 'Can you add outdoor lighting to my Hillcrest home?',
+          question: 'Can you add outdoor lighting to my Leesburg home?',
           answer:
             'Yes, we install all types of outdoor and landscape lighting.',
         },
         {
-          question: 'Do you offer maintenance services in Hillcrest?',
+          question: 'Do you offer maintenance services in Leesburg?',
           answer:
             'Yes, we offer electrical safety inspections and maintenance services.',
         },
         {
-          question: 'What payment methods do you accept in Hillcrest?',
+          question: 'What payment methods do you accept in Leesburg?',
           answer:
             'We accept cash, check, and all major credit cards.',
         },
@@ -787,11 +787,11 @@ async function main() {
       published: true,
     },
     {
-      city: 'Meadowbrook',
-      state: 'State',
-      slug: 'meadowbrook',
+      city: 'Purcellville',
+      state: 'VA',
+      slug: 'purcellville',
       intro:
-        'Velocity Electric brings professional electrical services to Meadowbrook. We\'re committed to providing safe, reliable electrical work at fair prices.',
+        'Velocity Electric brings professional electrical services to Purcellville. We\'re committed to providing safe, reliable electrical work at fair prices in western Loudoun County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Safe Work',
@@ -802,30 +802,30 @@ async function main() {
           description: 'Competitive rates with no hidden fees.',
         },
         {
-          title: 'Licensed Pros',
-          description: 'All work performed by licensed electricians.',
+          title: 'Rural Experience',
+          description: 'Experienced with rural properties and well pumps.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'Is Meadowbrook in your service area?',
+          question: 'Is Purcellville in your service area?',
           answer:
-            'Yes! Meadowbrook is one of our primary service areas with no travel fees.',
+            'Yes! Purcellville and all of western Loudoun County are in our service area.',
         },
         {
-          question: 'Can you help with a Meadowbrook home sale inspection?',
+          question: 'Can you help with a Purcellville home sale inspection?',
           answer:
             'Yes, we can perform electrical inspections and make repairs needed for home sales.',
         },
         {
-          question: 'Do you install whole-house surge protection in Meadowbrook?',
+          question: 'Do you install whole-house surge protection in Purcellville?',
           answer:
-            'Yes, we install and recommend whole-house surge protection for Meadowbrook homes.',
+            'Yes, we install and recommend whole-house surge protection for Purcellville homes, especially important in rural areas.',
         },
         {
-          question: 'Can you upgrade outlets in my Meadowbrook home?',
+          question: 'Can you work on well pump electrical in Purcellville?',
           answer:
-            'Yes, we upgrade outlets including adding GFCI protection where required.',
+            'Yes, we service well pump electrical systems throughout western Loudoun.',
         },
         {
           question: 'What brands do you work with?',
@@ -836,11 +836,11 @@ async function main() {
       published: true,
     },
     {
-      city: 'Fairview',
-      state: 'State',
-      slug: 'fairview',
+      city: 'Winchester',
+      state: 'VA',
+      slug: 'winchester',
       intro:
-        'Your trusted electrician in Fairview. Velocity Electric provides comprehensive electrical services with a commitment to excellence and customer satisfaction.',
+        'Your trusted electrician in Winchester. Velocity Electric provides comprehensive electrical services with a commitment to excellence and customer satisfaction in Winchester and Frederick County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Excellence',
@@ -848,36 +848,36 @@ async function main() {
         },
         {
           title: 'Trust',
-          description: 'Building long-term relationships in Fairview.',
+          description: 'Building long-term relationships in Winchester.',
         },
         {
-          title: 'Results',
-          description: 'Electrical solutions that last.',
+          title: 'Valley Coverage',
+          description: 'Serving Winchester and the Shenandoah Valley.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'How do I book an electrician in Fairview?',
+          question: 'How do I book an electrician in Winchester?',
           answer:
             'Call us or use our online booking form. We\'ll schedule a convenient time.',
         },
         {
-          question: 'Do you provide written estimates for Fairview jobs?',
+          question: 'Do you provide written estimates for Winchester jobs?',
           answer:
             'Yes, we provide detailed written estimates before starting work.',
         },
         {
-          question: 'Can you add circuits in my Fairview garage?',
+          question: 'Can you add circuits in my Winchester garage?',
           answer:
             'Yes, we frequently add circuits for workshops, EV chargers, and appliances.',
         },
         {
-          question: 'Do you offer senior discounts in Fairview?',
+          question: 'Do you offer senior discounts in Winchester?',
           answer:
             'Yes, we offer a 10% senior discount on labor. Ask when scheduling.',
         },
         {
-          question: 'Is your work guaranteed in Fairview?',
+          question: 'Is your work guaranteed in Winchester?',
           answer:
             'Yes, all our work is backed by our satisfaction guarantee.',
         },
@@ -885,19 +885,19 @@ async function main() {
       published: true,
     },
     {
-      city: 'Cedar Heights',
-      state: 'State',
-      slug: 'cedar-heights',
+      city: 'Reston',
+      state: 'VA',
+      slug: 'reston',
       intro:
-        'Cedar Heights homeowners choose Velocity Electric for quality electrical services. Our experienced team handles everything from simple repairs to complex installations.',
+        'Reston homeowners choose Velocity Electric for quality electrical services. Our experienced team handles everything from simple repairs to complex installations in this planned community.',
       highlightsJson: JSON.stringify([
         {
           title: 'Quality Focus',
-          description: 'Premium workmanship on every Cedar Heights job.',
+          description: 'Premium workmanship on every Reston job.',
         },
         {
-          title: 'Experience',
-          description: 'Decades of combined electrical experience.',
+          title: 'Condo Experience',
+          description: 'Experienced with Reston condos and townhomes.',
         },
         {
           title: 'Full Service',
@@ -906,39 +906,39 @@ async function main() {
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'What makes you different from other Cedar Heights electricians?',
+          question: 'What makes you different from other Reston electricians?',
           answer:
             'We combine technical expertise with genuine customer care. Our goal is long-term relationships, not just one-time jobs.',
         },
         {
-          question: 'Can you rewire my Cedar Heights home?',
+          question: 'Can you work on Reston condos and townhomes?',
           answer:
-            'Yes, we do full and partial rewiring projects. We\'ll minimize disruption to your home.',
+            'Yes, we have extensive experience with Reston condominiums, townhomes, and cluster homes.',
         },
         {
-          question: 'Do you install smart home devices in Cedar Heights?',
+          question: 'Do you install smart home devices in Reston?',
           answer:
             'Yes! We install and configure smart switches, thermostats, and more.',
         },
         {
-          question: 'What hours are you available in Cedar Heights?',
+          question: 'What hours are you available in Reston?',
           answer:
             'Regular hours are Mon-Fri 7AM-6PM, Sat 8AM-4PM. Emergency service is available 24/7.',
         },
         {
-          question: 'Do you do commercial work in Cedar Heights?',
+          question: 'Do you do commercial work in Reston?',
           answer:
-            'Yes, we serve Cedar Heights businesses as well as residences.',
+            'Yes, we serve Reston businesses including those in Reston Town Center.',
         },
       ]),
       published: true,
     },
     {
-      city: 'Pinewood',
-      state: 'State',
-      slug: 'pinewood',
+      city: 'Manassas',
+      state: 'VA',
+      slug: 'manassas',
       intro:
-        'Velocity Electric serves the Pinewood community with professional electrical services. Count on us for honest advice, quality work, and fair pricing.',
+        'Velocity Electric serves the Manassas community with professional electrical services. Count on us for honest advice, quality work, and fair pricing in Manassas and Prince William County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Honest',
@@ -949,23 +949,23 @@ async function main() {
           description: 'Work that meets our high standards.',
         },
         {
-          title: 'Fair',
-          description: 'Competitive pricing with no surprises.',
+          title: 'Local Knowledge',
+          description: 'Familiar with Manassas and PWC requirements.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'Do you serve residential and commercial in Pinewood?',
+          question: 'Do you serve residential and commercial in Manassas?',
           answer:
-            'Yes, we provide both residential and commercial electrical services in Pinewood.',
+            'Yes, we provide both residential and commercial electrical services in Manassas and Manassas Park.',
         },
         {
-          question: 'Can you install a generator at my Pinewood home?',
+          question: 'Can you install a generator at my Manassas home?',
           answer:
-            'Yes, we install standby generators and transfer switches for Pinewood homes.',
+            'Yes, we install standby generators and transfer switches for Manassas homes.',
         },
         {
-          question: 'Do you fix code violations in Pinewood?',
+          question: 'Do you fix code violations in Manassas?',
           answer:
             'Yes, we correct code violations and bring electrical systems up to current standards.',
         },
@@ -975,7 +975,7 @@ async function main() {
             'We offer a 100% satisfaction guarantee. If something isn\'t right, we\'ll make it right.',
         },
         {
-          question: 'How do I get a quote for Pinewood service?',
+          question: 'How do I get a quote for Manassas service?',
           answer:
             'Call us or submit an online request. Most quotes are provided same-day.',
         },
@@ -983,15 +983,15 @@ async function main() {
       published: true,
     },
     {
-      city: 'Westfield',
-      state: 'State',
-      slug: 'westfield',
+      city: 'Woodbridge',
+      state: 'VA',
+      slug: 'woodbridge',
       intro:
-        'Looking for a reliable electrician in Westfield? Velocity Electric provides top-quality electrical services backed by years of experience and thousands of satisfied customers.',
+        'Looking for a reliable electrician in Woodbridge? Velocity Electric provides top-quality electrical services backed by years of experience and thousands of satisfied customers in Prince William County.',
       highlightsJson: JSON.stringify([
         {
           title: 'Reliable',
-          description: 'Dependable service Westfield can count on.',
+          description: 'Dependable service Woodbridge can count on.',
         },
         {
           title: 'Proven',
@@ -999,32 +999,32 @@ async function main() {
         },
         {
           title: 'Local',
-          description: 'Serving our Westfield neighbors with pride.',
+          description: 'Serving our Woodbridge neighbors with pride.',
         },
       ]),
       faqsJson: JSON.stringify([
         {
-          question: 'Why should I choose you for Westfield electrical work?',
+          question: 'Why should I choose you for Woodbridge electrical work?',
           answer:
             'We offer the perfect combination of technical skill, fair pricing, and genuine customer care.',
         },
         {
-          question: 'Can you add dedicated circuits in Westfield?',
+          question: 'Can you add dedicated circuits in Woodbridge?',
           answer:
             'Yes, we add circuits for appliances, home offices, workshops, and more.',
         },
         {
-          question: 'Do you do electrical inspections in Westfield?',
+          question: 'Do you do electrical inspections in Woodbridge?',
           answer:
             'Yes, we offer safety inspections and can provide reports for real estate transactions.',
         },
         {
-          question: 'What\'s your warranty on Westfield work?',
+          question: 'What\'s your warranty on Woodbridge work?',
           answer:
             'We offer a 1-year workmanship warranty on all electrical work performed.',
         },
         {
-          question: 'Are you available for same-day service in Westfield?',
+          question: 'Are you available for same-day service in Woodbridge?',
           answer:
             'Often yes! Call us and we\'ll do our best to accommodate same-day requests.',
         },

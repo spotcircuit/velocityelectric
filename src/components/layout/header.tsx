@@ -71,12 +71,12 @@ export function Header({ businessName, phone }: HeaderProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="link-nav text-sm"
+                className="nav-link-desktop"
               >
                 {link.label}
               </Link>
@@ -120,23 +120,25 @@ export function Header({ businessName, phone }: HeaderProps) {
       {/* Mobile Menu */}
       <div
         className={cn(
-          'lg:hidden bg-white border-t border-border overflow-hidden transition-all duration-300',
+          'lg:hidden overflow-hidden transition-all duration-300',
           isMenuOpen ? 'max-h-screen' : 'max-h-0'
         )}
+        style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E3E8F0' }}
       >
         <Container>
-          <nav className="py-4 space-y-2">
+          <nav className="py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block py-2 px-4 text-text hover:bg-surface rounded-lg transition-colors"
+                className="nav-link-mobile"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <span className="nav-link-bullet"></span>
                 {link.label}
               </Link>
             ))}
-            <div className="pt-4 border-t border-border">
+            <div className="pt-4 mt-2" style={{ borderTop: '1px solid #E3E8F0' }}>
               <a
                 href={`tel:${formatPhoneForTel(phone)}`}
                 onClick={handleCallClick}
