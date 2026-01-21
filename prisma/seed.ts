@@ -9,7 +9,11 @@ async function main() {
   console.log('📝 Creating site config...')
   await prisma.siteConfig.upsert({
     where: { id: 'site-config' },
-    update: {},
+    update: {
+      phone: '(571) 532-1594',
+      licenseNumber: 'VA Master Electrician #2710047894',
+      address: '503 Carlisle Dr. Ste 100, Herndon, VA 20170',
+    },
     create: {
       id: 'site-config',
       businessName: 'Velocity Electric',
