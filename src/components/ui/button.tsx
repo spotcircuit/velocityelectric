@@ -13,6 +13,8 @@ const buttonVariants = cva(
         default: 'bg-accent text-white hover:bg-accent-hover focus-visible:ring-accent',
         secondary:
           'border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white focus-visible:ring-primary',
+        outline:
+          'border-2 border-current bg-transparent hover:bg-white/10 focus-visible:ring-white',
         call: 'bg-success text-white hover:bg-green-700 focus-visible:ring-success',
         danger: 'bg-danger text-white hover:bg-red-700 focus-visible:ring-danger',
         ghost: 'hover:bg-surface text-text focus-visible:ring-accent',
