@@ -419,7 +419,7 @@ export default async function ServiceAreaPage({ params }: Props) {
             ...(faqs.length > 0 && {
               mainEntity: {
                 '@type': 'FAQPage',
-                mainEntity: faqs.map((faq) => ({
+                mainEntity: faqs.map((faq: { question: string; answer: string }) => ({
                   '@type': 'Question',
                   name: faq.question,
                   acceptedAnswer: {

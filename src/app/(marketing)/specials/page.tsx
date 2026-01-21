@@ -27,12 +27,13 @@ export default async function SpecialsPage() {
   const { promos, config } = await getSpecialsData()
 
   // Separate active and expired promos
+  type PromoType = { id: string; title: string; description: string; code: string | null; expiresAt: Date | null; sortOrder: number; published: boolean }
   const now = new Date()
   const activePromos = promos.filter(
-    (p) => !p.expiresAt || new Date(p.expiresAt) >= now
+    (p: PromoType) => !p.expiresAt || new Date(p.expiresAt) >= now
   )
   const expiredPromos = promos.filter(
-    (p) => p.expiresAt && new Date(p.expiresAt) < now
+    (p: PromoType) => p.expiresAt && new Date(p.expiresAt) < now
   )
 
   return (
