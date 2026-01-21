@@ -42,7 +42,7 @@ export default async function HomePage() {
   // Calculate average rating
   const avgRating =
     testimonials.length > 0
-      ? testimonials.reduce((acc: number, t) => acc + t.rating, 0) / testimonials.length
+      ? testimonials.reduce((acc: number, t: { rating: number }) => acc + t.rating, 0) / testimonials.length
       : 5
 
   return (
