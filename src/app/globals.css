@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary colors */
+  --color-primary: #0B1F3B;
+  --color-primary-dark: #071528;
+
+  /* Text colors */
+  --color-text: #0B0F17;
+  --color-muted: #5B6677;
+
+  /* Background colors */
+  --color-bg: #FFFFFF;
+  --color-surface: #F6F8FB;
+  --color-border: #E3E8F0;
+
+  /* Accent colors */
+  --color-accent: #1E88FF;
+  --color-accent-hover: #0B6FE6;
+  --color-accent-soft: #EAF3FF;
+
+  /* Secondary accent */
+  --color-cyan: #2DD4FF;
+  --color-cyan-soft: #E6FAFF;
+
+  /* Status colors */
+  --color-success: #16A34A;
+  --color-warning: #F59E0B;
+  --color-danger: #DC2626;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-bg text-text antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-primary;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  .card-base {
+    @apply rounded-2xl bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border-2 border-primary bg-transparent px-6 py-3 text-base font-semibold text-primary transition-all duration-200 hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-call {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-success px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2;
+  }
+
+  .input-base {
+    @apply w-full rounded-xl border border-border bg-white px-4 py-3 text-text placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-200;
+  }
+
+  .label-base {
+    @apply mb-2 block text-sm font-medium text-text;
+  }
+
+  .link-nav {
+    @apply text-muted hover:text-primary font-medium transition-colors;
+  }
+
+  .link-footer {
+    @apply text-gray-300 hover:text-white transition-colors;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-accent-soft text-accent;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-success;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-warning;
+  }
+
+  .prose-custom {
+    @apply prose prose-slate max-w-none prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-strong:text-primary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Hide focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Skip to main content link */
+.skip-link {
+  @apply absolute -top-10 left-4 z-50 bg-accent px-4 py-2 text-white transition-all focus:top-4;
+}

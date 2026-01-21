@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id               String   @id @default(cuid())
+  name             String
+  phone            String
+  email            String?
+  city             String?
+  serviceRequested String?
+  message          String?
+  sourcePage       String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([phone])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Int      @default(5)
+  text      String
+  location  String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published])
+  @@index([createdAt])
+}
+
+model Promo {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  code        String?
+  expiresAt   DateTime?
+  published   Boolean   @default(false)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published])
+  @@index([sortOrder])
+}
+
+model ServiceArea {
+  id             String   @id @default(cuid())
+  city           String
+  state          String
+  slug           String   @unique
+  intro          String
+  highlightsJson String   @default("[]")
+  faqsJson       String   @default("[]")
+  published      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([published])
+  @@index([slug])
+}
+
+model Service {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  title            String
+  excerpt          String
+  contentHtml      String
+  faqsJson         String   @default("[]")
+  iconName         String   @default("Zap")
+  published        Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([published])
+  @@index([slug])
+  @@index([sortOrder])
+}
+
+model SiteConfig {
+  id               String   @id @default("site-config")
+  businessName     String   @default("[BUSINESS NAME]")
+  phone            String   @default("[PHONE]")
+  email            String   @default("[EMAIL]")
+  primaryArea      String   @default("[PRIMARY AREA]")
+  citiesServed     String   @default("[]")
+  hours            String   @default("[HOURS]")
+  emergencyEnabled Boolean  @default(true)
+  licenseNumber    String   @default("")
+  googleReviewUrl  String   @default("")
+  address          String   @default("")
+  tagline          String   @default("Your Trusted Local Electrician")
+  aboutText        String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
