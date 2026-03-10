@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'AI image generation not configured. Add OPENAI_API_KEY to environment variables.' },
+      { error: 'AI image generation not configured. Add GEMINI_API_KEY to environment variables.' },
       { status: 500 }
     )
   }
@@ -30,25 +30,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // Call OpenAI DALL-E API
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'dall-e-3',
-        prompt: `Professional photo for an electrical contractor blog post: ${prompt}. Clean, modern, professional photography style. No text or watermarks.`,
-        n: 1,
-        size: '1792x1024',
-        quality: 'standard',
-      }),
-    })
+    // Call Gemini image generation API
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `Professional photo for an electrical contractor blog post: ${prompt}. Clean, modern, professional photography style. No text or watermarks.`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            responseModalities: ['IMAGE'],
+            imageConfig: {
+              aspectRatio: '16:9',
+              imageSize: '1K',
+            },
+          },
+        }),
+      }
+    )
 
     if (!response.ok) {
-      const err = await response.json()
-      console.error('OpenAI error:', err)
+      const err = await response.text()
+      console.error('Gemini error:', err)
       return NextResponse.json(
         { error: 'AI image generation failed. Try a different prompt.' },
         { status: 500 }
@@ -56,19 +67,30 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
-    const imageUrl = data.data[0]?.url
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: 'No image generated' }, { status: 500 })
+    // Extract inline image data from Gemini response
+    let imageBase64: string | null = null
+    const candidates = data.candidates || []
+    for (const candidate of candidates) {
+      const parts = candidate.content?.parts || []
+      for (const part of parts) {
+        if (part.inlineData) {
+          imageBase64 = part.inlineData.data
+          break
+        }
+      }
+      if (imageBase64) break
     }
 
-    // Download the image and save locally
-    const imageResponse = await fetch(imageUrl)
-    const imageBuffer = await imageResponse.arrayBuffer()
+    if (!imageBase64) {
+      return NextResponse.json({ error: 'No image generated. Try a different prompt.' }, { status: 500 })
+    }
 
+    // Decode base64 and save locally
+    const imageBuffer = Buffer.from(imageBase64, 'base64')
     const filename = `ai-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.png`
     const filepath = join(process.cwd(), 'public', 'uploads', 'blog', filename)
-    await writeFile(filepath, Buffer.from(imageBuffer))
+    await writeFile(filepath, imageBuffer)
 
     const url = `/uploads/blog/${filename}`
     return NextResponse.json({ url })
