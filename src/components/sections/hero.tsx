@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Phone, Star, Shield, Clock, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -37,7 +38,8 @@ export function Hero({ businessName, phone, tagline, licenseNumber }: HeroProps)
       </div>
 
       <Container className="relative">
-        <div className="max-w-4xl">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
           {/* Trust Badges */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <Badge className="bg-cyan-soft text-cyan border-0">
@@ -117,6 +119,22 @@ export function Hero({ businessName, phone, tagline, licenseNumber }: HeroProps)
             <div className="flex items-center gap-3 text-white">
               <CheckCircle2 className="h-6 w-6 text-cyan flex-shrink-0" />
               <span className="text-sm">100% Satisfaction Guarantee</span>
+            </div>
+          </div>
+        </div>
+
+          {/* Van Image */}
+          <div className="hidden lg:block">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-cyan/10 rounded-3xl blur-2xl" />
+              <Image
+                src="/images/Wrap vehicle VE.jpg"
+                alt="Velocity Electric service van"
+                width={600}
+                height={400}
+                className="relative rounded-2xl shadow-2xl"
+                priority
+              />
             </div>
           </div>
         </div>

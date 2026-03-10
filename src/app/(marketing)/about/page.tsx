@@ -98,14 +98,22 @@ export default async function AboutPage() {
               </p>
             </div>
           </div>
-          <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-              <div className="text-center text-white">
-                <Shield className="h-20 w-20 mx-auto mb-4 opacity-80" />
-                <p className="text-xl font-semibold">Licensed & Insured</p>
-                {config.licenseNumber && (
-                  <p className="text-gray-300">{config.licenseNumber}</p>
-                )}
+          <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-card-lg">
+            <Image
+              src="/images/Wrap vehicle VE.jpg"
+              alt="Velocity Electric service van"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/90 to-transparent p-6">
+              <div className="flex items-center gap-3 text-white">
+                <Shield className="h-8 w-8 opacity-90" />
+                <div>
+                  <p className="font-semibold">Licensed & Insured</p>
+                  {config.licenseNumber && (
+                    <p className="text-sm text-gray-300">{config.licenseNumber}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
