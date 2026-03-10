@@ -93,13 +93,22 @@ export default async function BlogPostPage({ params }: Props) {
         <Section padding="sm">
           <div className="max-w-3xl mx-auto">
             <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden shadow-lg">
-              <Image
-                src={post.featuredImage}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-              />
+              {post.featuredImage.startsWith('data:') ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.featuredImage}
+                  alt={post.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={post.featuredImage}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              )}
             </div>
           </div>
         </Section>

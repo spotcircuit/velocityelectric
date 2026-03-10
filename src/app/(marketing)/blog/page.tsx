@@ -55,12 +55,21 @@ export default async function BlogPage() {
                 <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
                   {post.featuredImage && (
                     <div className="relative h-48 w-full">
-                      <Image
-                        src={post.featuredImage}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                      {post.featuredImage.startsWith('data:') ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={post.featuredImage}
+                          alt={post.title}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <Image
+                          src={post.featuredImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      )}
                     </div>
                   )}
                   <CardContent className="p-6 flex flex-col h-full">
