@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 async function checkAuth() {
   const cookieStore = await cookies()
@@ -34,16 +32,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File too large. Max 5MB.' }, { status: 400 })
     }
 
-    // Generate unique filename
-    const ext = file.name.split('.').pop() || 'jpg'
-    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`
-    const filepath = join(process.cwd(), 'public', 'uploads', 'blog', filename)
-
-    // Write file
+    // Convert to base64 data URL — works on Vercel (read-only filesystem)
     const bytes = await file.arrayBuffer()
-    await writeFile(filepath, Buffer.from(bytes))
+    const base64 = Buffer.from(bytes).toString('base64')
+    const url = `data:${file.type};base64,${base64}`
 
-    const url = `/uploads/blog/${filename}`
     return NextResponse.json({ url })
   } catch (error) {
     console.error('Upload error:', error)

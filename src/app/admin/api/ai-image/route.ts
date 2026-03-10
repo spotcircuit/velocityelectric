@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 async function checkAuth() {
   const cookieStore = await cookies()
@@ -63,12 +61,14 @@ export async function POST(request: NextRequest) {
 
     // Extract inline image data from Gemini response
     let imageBase64: string | null = null
+    let mimeType = 'image/png'
     const candidates = data.candidates || []
     for (const candidate of candidates) {
       const parts = candidate.content?.parts || []
       for (const part of parts) {
         if (part.inlineData) {
           imageBase64 = part.inlineData.data
+          mimeType = part.inlineData.mimeType || 'image/png'
           break
         }
       }
@@ -79,13 +79,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No image generated. Try a different prompt.' }, { status: 500 })
     }
 
-    // Decode base64 and save locally
-    const imageBuffer = Buffer.from(imageBase64, 'base64')
-    const filename = `ai-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.png`
-    const filepath = join(process.cwd(), 'public', 'uploads', 'blog', filename)
-    await writeFile(filepath, imageBuffer)
-
-    const url = `/uploads/blog/${filename}`
+    // Return as data URL — works on Vercel (read-only filesystem) and stores directly in DB
+    const url = `data:${mimeType};base64,${imageBase64}`
     return NextResponse.json({ url })
   } catch (error) {
     console.error('AI image error:', error)
