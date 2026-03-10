@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // Call Gemini 2.5 Flash image generation API
+    // Call Gemini 3.1 Flash image generation API
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,9 +46,6 @@ export async function POST(request: NextRequest) {
               ],
             },
           ],
-          generationConfig: {
-            responseModalities: ['TEXT', 'IMAGE'],
-          },
         }),
       }
     )
