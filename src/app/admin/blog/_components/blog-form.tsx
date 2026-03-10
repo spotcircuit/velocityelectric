@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { RichEditor } from '@/components/ui/rich-editor'
 import { createBlogPost, updateBlogPost } from '@/app/actions/admin'
 
 interface BlogFormProps {
@@ -66,18 +67,14 @@ export function BlogForm({ post }: BlogFormProps) {
       </div>
 
       <div>
-        <Label htmlFor="contentHtml">Content (HTML) *</Label>
-        <Textarea
-          id="contentHtml"
-          name="contentHtml"
-          defaultValue={post?.contentHtml}
-          placeholder="<h2>Introduction</h2><p>Your blog content here...</p>"
-          required
-          className="mt-1 min-h-[300px] font-mono text-sm"
-        />
-        <p className="text-xs text-muted mt-1">
-          Use HTML tags: &lt;h2&gt;, &lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;, &lt;a href=&quot;...&quot;&gt;
-        </p>
+        <Label>Content *</Label>
+        <div className="mt-1">
+          <RichEditor
+            name="contentHtml"
+            defaultValue={post?.contentHtml}
+            placeholder="Start writing your blog post..."
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
