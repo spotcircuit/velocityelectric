@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { sendLeadNotification } from '@/lib/email'
 import { rateLimit, getClientIP } from '@/lib/rate-limit'
 import { leadFormSchema, type LeadFormData } from '@/lib/validations'
+import { pushLeadToHubSpot } from '@/lib/hubspot'
 
 interface SubmitLeadResult {
   success: boolean
@@ -67,26 +68,18 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       console.error('Failed to send lead notification email:', error)
     })
 
-    // CRM webhook (async, don't wait)
-    const webhookUrl = process.env.CRM_WEBHOOK_URL
-    if (webhookUrl) {
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: lead.name,
-          phone: lead.phone,
-          email: lead.email,
-          city: lead.city,
-          serviceRequested: lead.serviceRequested,
-          message: lead.message,
-          sourcePage: lead.sourcePage,
-          submittedAt: lead.createdAt.toISOString(),
-        }),
-      }).catch((error) => {
-        console.error('Failed to send CRM webhook:', error)
-      })
-    }
+    // Push to HubSpot CRM (async, don't wait)
+    pushLeadToHubSpot({
+      name: lead.name,
+      phone: lead.phone,
+      email: lead.email,
+      city: lead.city,
+      serviceRequested: lead.serviceRequested,
+      message: lead.message,
+      sourcePage: lead.sourcePage,
+    }).catch((error) => {
+      console.error('Failed to push lead to HubSpot:', error)
+    })
 
     return { success: true }
   } catch (error) {
