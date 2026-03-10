@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // Call Gemini image generation API
+    // Call Gemini 2.5 Flash image generation API
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,17 +41,13 @@ export async function POST(request: NextRequest) {
             {
               parts: [
                 {
-                  text: `Professional photo for an electrical contractor blog post: ${prompt}. Clean, modern, professional photography style. No text or watermarks.`,
+                  text: `Generate an image: Professional photo for an electrical contractor blog post: ${prompt}. Clean, modern, professional photography style. No text or watermarks.`,
                 },
               ],
             },
           ],
           generationConfig: {
-            responseModalities: ['IMAGE'],
-            imageConfig: {
-              aspectRatio: '16:9',
-              imageSize: '1K',
-            },
+            responseModalities: ['TEXT', 'IMAGE'],
           },
         }),
       }
