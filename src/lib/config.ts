@@ -24,10 +24,10 @@ const defaultConfig: SiteConfigData = {
   hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
   emergencyEnabled: true,
   licenseNumber: 'VA Master Electrician #2710047894',
-  googleReviewUrl: '',
+  googleReviewUrl: 'https://g.page/r/Cb3cFBcc1zerEAE/review',
   address: '123 Main Street, Springfield, ST 12345',
   tagline: 'Your Trusted Master Electrician',
-  aboutText: 'With over 20 years of experience, we provide top-quality electrical services to residential and commercial customers.',
+  aboutText: 'Velocity Electric is a father-and-son operation built on a shared passion for the trade and a commitment to doing things right. With decades of combined experience as licensed Master Electricians, we bring commercial-grade standards and expertise to every residential project.',
 }
 
 let cachedConfig: SiteConfigData | null = null

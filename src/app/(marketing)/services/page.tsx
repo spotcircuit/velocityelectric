@@ -8,7 +8,7 @@ import { CTASection } from '@/components/sections/cta-section'
 export const metadata: Metadata = {
   title: 'Our Electrical Services',
   description:
-    'Professional electrical services including repairs, installations, panel upgrades, EV charger installation, lighting, smart home, and commercial electrical work.',
+    'Professional electrical services including repairs, installations, panel upgrades, EV charger installation, lighting, fire safety, and commercial electrical work.',
 }
 
 async function getServicesData() {

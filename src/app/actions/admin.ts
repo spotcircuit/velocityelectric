@@ -284,6 +284,74 @@ export async function deletePromo(formData: FormData) {
   redirect('/admin/promos')
 }
 
+// Blog Posts
+export async function createBlogPost(formData: FormData) {
+  await checkAdminAuth()
+
+  const data = {
+    slug: formData.get('slug') as string,
+    title: formData.get('title') as string,
+    excerpt: formData.get('excerpt') as string,
+    contentHtml: formData.get('contentHtml') as string,
+    published: formData.get('published') === 'true',
+    metaTitle: formData.get('metaTitle') as string || null,
+    metaDescription: formData.get('metaDescription') as string || null,
+  }
+
+  await prisma.blogPost.create({ data })
+  revalidatePath('/admin/blog')
+  revalidatePath('/blog')
+  redirect('/admin/blog')
+}
+
+export async function updateBlogPost(formData: FormData) {
+  await checkAdminAuth()
+
+  const id = formData.get('id') as string
+  const data = {
+    slug: formData.get('slug') as string,
+    title: formData.get('title') as string,
+    excerpt: formData.get('excerpt') as string,
+    contentHtml: formData.get('contentHtml') as string,
+    published: formData.get('published') === 'true',
+    metaTitle: formData.get('metaTitle') as string || null,
+    metaDescription: formData.get('metaDescription') as string || null,
+  }
+
+  await prisma.blogPost.update({ where: { id }, data })
+  revalidatePath('/admin/blog')
+  revalidatePath('/blog')
+  revalidatePath(`/blog/${data.slug}`)
+  redirect('/admin/blog')
+}
+
+export async function toggleBlogPostPublished(formData: FormData) {
+  await checkAdminAuth()
+
+  const id = formData.get('id') as string
+  const post = await prisma.blogPost.findUnique({ where: { id } })
+
+  if (post) {
+    await prisma.blogPost.update({
+      where: { id },
+      data: { published: !post.published },
+    })
+    revalidatePath('/admin/blog')
+    revalidatePath('/blog')
+    revalidatePath(`/blog/${post.slug}`)
+  }
+}
+
+export async function deleteBlogPost(formData: FormData) {
+  await checkAdminAuth()
+
+  const id = formData.get('id') as string
+  await prisma.blogPost.delete({ where: { id } })
+  revalidatePath('/admin/blog')
+  revalidatePath('/blog')
+  redirect('/admin/blog')
+}
+
 // Site Config
 export async function updateSiteConfig(formData: FormData) {
   await checkAdminAuth()

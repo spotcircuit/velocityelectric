@@ -33,7 +33,7 @@ const serviceOptions = [
   { value: 'ev-charger-installation', label: 'EV Charger Installation' },
   { value: 'surge-protection', label: 'Surge Protection' },
   { value: 'generator-transfer-switches', label: 'Generator & Transfer Switches' },
-  { value: 'smart-home', label: 'Smart Home' },
+  { value: 'fire-safety', label: 'Fire Safety' },
   { value: 'commercial-electrical', label: 'Commercial Electrical' },
   { value: 'other', label: 'Other / Not Sure' },
 ]

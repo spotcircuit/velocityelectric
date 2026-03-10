@@ -67,6 +67,27 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       console.error('Failed to send lead notification email:', error)
     })
 
+    // CRM webhook (async, don't wait)
+    const webhookUrl = process.env.CRM_WEBHOOK_URL
+    if (webhookUrl) {
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: lead.name,
+          phone: lead.phone,
+          email: lead.email,
+          city: lead.city,
+          serviceRequested: lead.serviceRequested,
+          message: lead.message,
+          sourcePage: lead.sourcePage,
+          submittedAt: lead.createdAt.toISOString(),
+        }),
+      }).catch((error) => {
+        console.error('Failed to send CRM webhook:', error)
+      })
+    }
+
     return { success: true }
   } catch (error) {
     console.error('Error submitting lead:', error)

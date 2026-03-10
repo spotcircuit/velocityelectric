@@ -8,7 +8,7 @@ import { CTASection } from '@/components/sections/cta-section'
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about our team of licensed Master Electricians. Family-owned, community-focused, and committed to excellence in electrical services.',
+    'Father-and-son Master Electricians bringing commercial-grade standards to residential services. Family-owned, community-focused, and committed to excellence.',
 }
 
 const values = [
@@ -60,8 +60,8 @@ export default async function AboutPage() {
             About {config.businessName}
           </h1>
           <p className="text-xl" style={{ color: '#D1D5DB' }}>
-            Your trusted local electrician committed to providing safe, reliable, and
-            professional electrical services to our community.
+            Master Electrician expertise, neighborhood service. A father-and-son
+            legacy bringing commercial-grade standards to every home.
           </p>
         </div>
       </section>
@@ -70,23 +70,31 @@ export default async function AboutPage() {
       <Section>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="mb-6">Our Story</h2>
+            <h2 className="mb-6">Master Electrician Expertise, Neighborhood Service</h2>
             <div className="prose-custom">
               <p>
-                {config.aboutText ||
-                  `Founded with a simple mission: to provide honest, reliable electrical services that homeowners and businesses can trust. As a licensed Master Electrician, we bring decades of experience and a commitment to excellence to every job we undertake.`}
+                Velocity Electric is a small, local team with over 20 years of experience
+                serving Northern Virginia. We believe that every family home deserves the
+                same high level of safety and skill as a major commercial building.
               </p>
               <p>
-                What started as a one-person operation has grown into a trusted name in
-                {config.primaryArea}, but our core values remain the same. We believe in
-                treating our customers the way we'd want to be treated—with honesty,
-                respect, and fair pricing.
+                Our business is a father-and-son legacy. I learned the trade by working on
+                large commercial projects with my father's business. In that high-stakes
+                environment, I learned that doing things "good enough" isn't an
+                option—it has to be perfect.
               </p>
               <p>
-                Whether it's a simple outlet repair or a complete electrical system
-                upgrade, we approach every job with the same level of care and
-                professionalism. Our reputation is built on the relationships we've
-                formed with our customers over the years.
+                Today, we've brought those high-end commercial standards to the
+                residential side. We've combined the heavy-duty skills of the big jobs
+                with the friendly, personal care of a small shop. You get the best of
+                both worlds: the knowledge of a Master Electrician and the attention of
+                a local neighbor.
+              </p>
+              <p>
+                We are a small team that lives by three simple rules: Do it right, keep
+                it clean, and be someone you can trust. Whether we are changing a light
+                fixture or wiring a small business, we treat your property with the pride
+                and respect passed down through our family.
               </p>
             </div>
           </div>
@@ -148,14 +156,14 @@ export default async function AboutPage() {
             <h2 className="mb-6">Why Choose Us?</h2>
             <ul className="space-y-4">
               {[
-                'Licensed Master Electrician with extensive training',
+                'Father-and-son team of licensed Master Electricians',
+                'Commercial-grade standards applied to residential work',
                 'Fully insured for your peace of mind',
                 'Upfront, transparent pricing with no surprises',
                 'Clean, courteous service - we respect your home',
                 'Same-day and emergency service available',
                 '100% satisfaction guarantee on all work',
-                'Background-checked and drug-tested technicians',
-                'Locally owned and operated',
+                'Family-owned and locally operated',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0 mt-0.5" />

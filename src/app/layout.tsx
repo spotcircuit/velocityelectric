@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     'panel upgrades',
     'EV charger installation',
     'lighting installation',
-    'smart home',
+    'fire safety',
     'commercial electrician',
   ],
   authors: [{ name: 'Velocity Electric' }],

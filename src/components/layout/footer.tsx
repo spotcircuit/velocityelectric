@@ -20,13 +20,14 @@ const serviceLinks = [
   { href: '/services/ev-charger-installation', label: 'EV Charger Installation' },
   { href: '/services/surge-protection', label: 'Surge Protection' },
   { href: '/services/generator-transfer-switches', label: 'Generators' },
-  { href: '/services/smart-home', label: 'Smart Home' },
+  { href: '/services/fire-safety', label: 'Fire Safety' },
   { href: '/services/commercial-electrical', label: 'Commercial' },
 ]
 
 const quickLinks = [
   { href: '/about', label: 'About Us' },
   { href: '/reviews', label: 'Reviews' },
+  { href: '/blog', label: 'Blog' },
   { href: '/specials', label: 'Specials & Coupons' },
   { href: '/service-areas', label: 'Service Areas' },
   { href: '/contact', label: 'Contact Us' },

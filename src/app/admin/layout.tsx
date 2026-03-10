@@ -10,6 +10,7 @@ import {
   Settings,
   Users,
   LogOut,
+  BookOpen,
 } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 
@@ -18,6 +19,7 @@ const navItems = [
   { href: '/admin/leads', label: 'Leads', icon: Users },
   { href: '/admin/services', label: 'Services', icon: FileText },
   { href: '/admin/service-areas', label: 'Service Areas', icon: MapPin },
+  { href: '/admin/blog', label: 'Blog', icon: BookOpen },
   { href: '/admin/testimonials', label: 'Testimonials', icon: Star },
   { href: '/admin/promos', label: 'Promos', icon: Tag },
   { href: '/admin/settings', label: 'Settings', icon: Settings },

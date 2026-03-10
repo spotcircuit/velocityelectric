@@ -35,11 +35,11 @@ async function main() {
       hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
       emergencyEnabled: true,
       licenseNumber: 'VA Master Electrician #2710047894',
-      googleReviewUrl: '',
+      googleReviewUrl: 'https://g.page/r/Cb3cFBcc1zerEAE/review',
       address: '503 Carlisle Dr. Ste 100, Herndon, VA 20170',
       tagline: 'Your Trusted Master Electrician',
       aboutText:
-        'With over 20 years of experience, Velocity Electric has been proudly serving Northern Virginia with reliable, professional electrical services. As a licensed Master Electrician, we bring expertise, integrity, and a commitment to excellence to every job. Our team treats your home like our own, ensuring clean, courteous service every time.',
+        'Velocity Electric is a small, local team with over 20 years of experience serving Northern Virginia. We believe that every family home deserves the same high level of safety and skill as a major commercial building. Our business is a father-and-son legacy—we brought high-end commercial standards to the residential side, combining heavy-duty skills with friendly, personal care.',
     },
   })
 
@@ -348,53 +348,59 @@ async function main() {
       sortOrder: 6,
     },
     {
-      slug: 'smart-home',
-      title: 'Smart Home',
+      slug: 'fire-safety',
+      title: 'Fire Safety',
       excerpt:
-        'Upgrade to a connected home with professional smart device installation. Control lights, thermostats, and more from your phone.',
+        'Protect your family and property with professional smoke detector, carbon monoxide detector, and fire alarm panel services. Safety inspections and full system troubleshooting.',
       contentHtml: `
-        <h2>Smart Home Electrical Services</h2>
-        <p>Transform your home into a smart home with professional installation of connected devices. From smart switches to whole-home automation, we make technology work seamlessly in your space.</p>
+        <h2>Fire Safety Electrical Services</h2>
+        <p>Your family's safety is our top priority. We install, inspect, and maintain fire safety systems for both residential and commercial properties—from basic smoke detectors to complete fire alarm panels.</p>
 
-        <h3>Smart Devices We Install</h3>
+        <h3>Residential Fire Safety</h3>
         <ul>
-          <li>Smart light switches and dimmers</li>
-          <li>Smart thermostats</li>
-          <li>Video doorbells and cameras</li>
-          <li>Smart locks</li>
-          <li>Motorized shades</li>
-          <li>Whole-home audio</li>
+          <li>Smoke detector installation and replacement</li>
+          <li>Carbon monoxide (CO) detector installation</li>
+          <li>Combination smoke/CO detectors</li>
+          <li>Hardwired interconnected detector systems</li>
+          <li>Battery backup detector upgrades</li>
+          <li>Whole-home fire safety inspections</li>
         </ul>
 
-        <h3>Why Professional Installation?</h3>
-        <p>Many smart devices require proper wiring to function correctly. Smart switches often need a neutral wire that older homes may lack. We ensure proper installation and can add wiring where needed.</p>
+        <h3>Commercial Fire Alarm Panels</h3>
+        <ul>
+          <li>Complete fire alarm (F/A) panel installation</li>
+          <li>System inspections and compliance testing</li>
+          <li>Troubleshooting and repair of existing systems</li>
+          <li>Pull station and notification device installation</li>
+          <li>Code compliance upgrades</li>
+        </ul>
 
-        <h3>Integration and Setup</h3>
-        <p>We don't just install—we set up and integrate your devices so they work together. We'll show you how to use your new smart home features and answer any questions.</p>
+        <h3>Why Professional Installation Matters</h3>
+        <p>Properly installed and maintained fire safety devices save lives. Virginia code requires specific placement, spacing, and interconnection of detectors. As licensed Master Electricians, we ensure your system meets all codes and actually works when you need it most.</p>
       `,
       faqsJson: JSON.stringify([
         {
-          question: 'Do smart switches need special wiring?',
+          question: 'How often should smoke detectors be replaced?',
           answer:
-            'Most smart switches require a neutral wire, which some older homes lack. We can often add a neutral wire or recommend alternative solutions.',
+            'Smoke detectors should be replaced every 10 years, and CO detectors every 5-7 years. We can inspect your current devices and let you know if replacements are needed.',
         },
         {
-          question: 'Can I install smart devices myself?',
+          question: 'Should I get hardwired or battery-powered detectors?',
           answer:
-            'Simple devices like smart bulbs and plugs are DIY-friendly. Smart switches and hardwired devices should be installed by a licensed electrician for safety.',
+            'Hardwired detectors with battery backup are the gold standard. They interconnect so when one alarm sounds, they all sound—giving you maximum warning time. We recommend hardwired for all installations.',
         },
         {
-          question: 'What smart home platform should I use?',
+          question: 'Do you service commercial fire alarm panels?',
           answer:
-            'It depends on your preferences. We work with all major platforms including Google Home, Amazon Alexa, Apple HomeKit, and others. We can help you choose.',
+            'Yes. We perform complete system inspections, troubleshooting, and repairs on commercial fire alarm (F/A) panels. We can also install new systems and ensure code compliance.',
         },
         {
-          question: 'Will my smart devices work if the internet goes out?',
+          question: 'What does a fire safety inspection include?',
           answer:
-            'Most smart switches still work manually without internet. Smart features require internet, but you can always flip the switch the old-fashioned way.',
+            'We test all smoke and CO detectors, check placement and spacing per code, verify interconnection, inspect wiring, and provide a written report with any recommendations.',
         },
       ]),
-      iconName: 'Smartphone',
+      iconName: 'Flame',
       published: true,
       sortOrder: 7,
     },
@@ -535,6 +541,8 @@ async function main() {
     },
   ]
 
+  // Clear existing testimonials to prevent duplicates on re-seed
+  await prisma.testimonial.deleteMany({})
   for (const testimonial of testimonials) {
     await prisma.testimonial.create({ data: testimonial })
   }
@@ -1086,6 +1094,8 @@ async function main() {
     },
   ]
 
+  // Clear existing promos to prevent duplicates on re-seed
+  await prisma.promo.deleteMany({})
   for (const promo of promos) {
     await prisma.promo.create({ data: promo })
   }

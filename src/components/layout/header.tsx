@@ -20,6 +20,7 @@ const navLinks = [
   { href: '/service-areas', label: 'Service Areas' },
   { href: '/about', label: 'About' },
   { href: '/reviews', label: 'Reviews' },
+  { href: '/blog', label: 'Blog' },
   { href: '/specials', label: 'Specials' },
   { href: '/contact', label: 'Contact' },
 ]
