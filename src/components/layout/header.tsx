@@ -59,11 +59,11 @@ export function Header({ businessName, phone }: HeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/logo.jpg"
+              src="/images/velocity-electric-logo-transparent.png"
               alt={businessName}
               width={400}
               height={120}
-              className="h-24 w-auto md:h-32"
+              className="h-20 w-auto md:h-28 mix-blend-multiply"
               priority
             />
           </Link>

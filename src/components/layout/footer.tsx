@@ -51,15 +51,14 @@ export function Footer({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Company Info */}
             <div className="space-y-4">
-              <Link href="/" className="flex items-center gap-3">
+              <Link href="/" className="flex items-center">
                 <Image
-                  src="/brand/logo.svg"
+                  src="/images/velocity-electric-logo-transparent.png"
                   alt={businessName}
-                  width={48}
-                  height={48}
-                  className="h-12 w-auto brightness-0 invert"
+                  width={300}
+                  height={88}
+                  className="h-16 w-auto brightness-0 invert"
                 />
-                <span className="font-bold text-xl">{businessName}</span>
               </Link>
               <p className="text-gray-300 text-sm">
                 Your trusted Master Electrician for residential and commercial
