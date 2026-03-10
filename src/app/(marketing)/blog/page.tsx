@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Calendar, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { getSiteConfig } from '@/lib/config'
@@ -49,9 +50,19 @@ export default async function BlogPage() {
       <Section>
         {posts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post: { id: string; slug: string; title: string; excerpt: string; createdAt: Date }) => (
+            {posts.map((post: { id: string; slug: string; title: string; excerpt: string; featuredImage: string | null; createdAt: Date }) => (
               <Link key={post.id} href={`/blog/${post.slug}`} className="group">
-                <Card className="h-full hover:shadow-lg transition-shadow">
+                <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
+                  {post.featuredImage && (
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={post.featuredImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
                   <CardContent className="p-6 flex flex-col h-full">
                     <div className="flex items-center gap-2 text-sm text-muted mb-3">
                       <Calendar className="h-4 w-4" />

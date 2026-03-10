@@ -94,6 +94,7 @@ model BlogPost {
   title           String
   excerpt         String
   contentHtml     String
+  featuredImage   String?
   published       Boolean  @default(false)
   metaTitle       String?
   metaDescription String?

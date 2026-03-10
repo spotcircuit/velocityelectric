@@ -32,6 +32,25 @@ export function RichEditor({ name, defaultValue = '', placeholder, minHeight = 3
           statusbar: true,
           placeholder: placeholder || 'Start writing...',
           autoresize_bottom_margin: 16,
+          // Enable drag-and-drop / paste image uploads
+          images_upload_handler: (blobInfo: { blob: () => Blob; filename: () => string }) => {
+            return new Promise<string>((resolve, reject) => {
+              const formData = new FormData()
+              formData.append('file', blobInfo.blob(), blobInfo.filename())
+              fetch('/admin/api/upload', {
+                method: 'POST',
+                body: formData,
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.url) resolve(data.url)
+                  else reject(data.error || 'Upload failed')
+                })
+                .catch(() => reject('Upload failed'))
+            })
+          },
+          automatic_uploads: true,
+          file_picker_types: 'image',
           content_style: `
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.6; color: #333; padding: 8px; }
             h2 { font-size: 1.5em; margin-top: 1em; }

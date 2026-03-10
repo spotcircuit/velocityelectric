@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Clock } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, Calendar } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { getSiteConfig } from '@/lib/config'
 import { Section } from '@/components/ui/section'
@@ -86,6 +87,23 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* Featured Image */}
+      {post.featuredImage && (
+        <Section padding="sm">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src={post.featuredImage}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+        </Section>
+      )}
 
       {/* Content */}
       <Section>

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/db'
 import { clearConfigCache } from '@/lib/config'
+import { postToGoogleBusiness } from '@/lib/google-business'
 
 async function checkAdminAuth() {
   const cookieStore = await cookies()
@@ -288,17 +289,32 @@ export async function deletePromo(formData: FormData) {
 export async function createBlogPost(formData: FormData) {
   await checkAdminAuth()
 
+  const published = formData.get('published') === 'true'
   const data = {
     slug: formData.get('slug') as string,
     title: formData.get('title') as string,
     excerpt: formData.get('excerpt') as string,
     contentHtml: formData.get('contentHtml') as string,
-    published: formData.get('published') === 'true',
+    featuredImage: formData.get('featuredImage') as string || null,
+    published,
     metaTitle: formData.get('metaTitle') as string || null,
     metaDescription: formData.get('metaDescription') as string || null,
   }
 
-  await prisma.blogPost.create({ data })
+  const post = await prisma.blogPost.create({ data })
+
+  // Auto-post to Google Business Profile when published
+  if (published) {
+    postToGoogleBusiness({
+      title: data.title,
+      excerpt: data.excerpt,
+      slug: data.slug,
+      featuredImage: data.featuredImage,
+    }).catch((error) => {
+      console.error('Failed to post to Google Business:', error)
+    })
+  }
+
   revalidatePath('/admin/blog')
   revalidatePath('/blog')
   redirect('/admin/blog')
@@ -308,17 +324,33 @@ export async function updateBlogPost(formData: FormData) {
   await checkAdminAuth()
 
   const id = formData.get('id') as string
+  const published = formData.get('published') === 'true'
   const data = {
     slug: formData.get('slug') as string,
     title: formData.get('title') as string,
     excerpt: formData.get('excerpt') as string,
     contentHtml: formData.get('contentHtml') as string,
-    published: formData.get('published') === 'true',
+    featuredImage: formData.get('featuredImage') as string || null,
+    published,
     metaTitle: formData.get('metaTitle') as string || null,
     metaDescription: formData.get('metaDescription') as string || null,
   }
 
+  // Check if we're newly publishing (was draft, now published)
+  const existing = await prisma.blogPost.findUnique({ where: { id } })
   await prisma.blogPost.update({ where: { id }, data })
+
+  if (published && existing && !existing.published) {
+    postToGoogleBusiness({
+      title: data.title,
+      excerpt: data.excerpt,
+      slug: data.slug,
+      featuredImage: data.featuredImage,
+    }).catch((error) => {
+      console.error('Failed to post to Google Business:', error)
+    })
+  }
+
   revalidatePath('/admin/blog')
   revalidatePath('/blog')
   revalidatePath(`/blog/${data.slug}`)
@@ -332,10 +364,24 @@ export async function toggleBlogPostPublished(formData: FormData) {
   const post = await prisma.blogPost.findUnique({ where: { id } })
 
   if (post) {
+    const nowPublished = !post.published
     await prisma.blogPost.update({
       where: { id },
-      data: { published: !post.published },
+      data: { published: nowPublished },
     })
+
+    // Auto-post to GBP when toggling to published
+    if (nowPublished) {
+      postToGoogleBusiness({
+        title: post.title,
+        excerpt: post.excerpt,
+        slug: post.slug,
+        featuredImage: post.featuredImage,
+      }).catch((error) => {
+        console.error('Failed to post to Google Business:', error)
+      })
+    }
+
     revalidatePath('/admin/blog')
     revalidatePath('/blog')
     revalidatePath(`/blog/${post.slug}`)
