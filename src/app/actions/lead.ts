@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/db'
-import { sendLeadNotification } from '@/lib/email'
+import { sendLeadNotification, sendCustomerAutoReply } from '@/lib/email'
 import { rateLimit, getClientIP } from '@/lib/rate-limit'
 import { leadFormSchema, type LeadFormData } from '@/lib/validations'
 import { pushLeadToHubSpot } from '@/lib/hubspot'
@@ -56,7 +56,7 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
     })
 
     // Send email notification (async, don't wait)
-    sendLeadNotification({
+    const leadEmailData = {
       name: lead.name,
       phone: lead.phone,
       email: lead.email || undefined,
@@ -64,8 +64,15 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       serviceRequested: lead.serviceRequested || undefined,
       message: lead.message || undefined,
       sourcePage: lead.sourcePage,
-    }).catch((error) => {
+    }
+
+    sendLeadNotification(leadEmailData).catch((error) => {
       console.error('Failed to send lead notification email:', error)
+    })
+
+    // Send auto-reply to customer (async, don't wait)
+    sendCustomerAutoReply(leadEmailData).catch((error) => {
+      console.error('Failed to send customer auto-reply:', error)
     })
 
     // Push to HubSpot CRM (async, don't wait)

@@ -28,7 +28,8 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<boolean
 
   try {
     const { error } = await resend.emails.send({
-      from: 'Velocity Electric <noreply@resend.dev>',
+      from: 'Velocity Electric <josh@velocityelectric.co>',
+      replyTo: 'josh@velocityelectric.co',
       to: ownerEmail,
       subject: `🔔 New Lead: ${lead.name} - ${lead.serviceRequested || 'General Inquiry'}`,
       html: `
@@ -108,6 +109,71 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<boolean
     return true
   } catch (error) {
     console.error('Email service error:', error)
+    return false
+  }
+}
+
+export async function sendCustomerAutoReply(lead: LeadEmailData): Promise<boolean> {
+  if (!resend || !lead.email) {
+    return false
+  }
+
+  try {
+    const { error } = await resend.emails.send({
+      from: 'Velocity Electric <josh@velocityelectric.co>',
+      replyTo: 'josh@velocityelectric.co',
+      to: lead.email,
+      subject: `Thanks for contacting Velocity Electric!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #0B1F3B; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .header h1 { margin: 0; font-size: 22px; }
+            .content { background: #f9fafb; padding: 24px; border: 1px solid #e5e7eb; }
+            .highlight { background: #e0f2fe; border-left: 4px solid #1E88FF; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+            .cta { background: #1E88FF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 8px; font-weight: bold; }
+            .footer { text-align: center; padding: 15px; color: #6b7280; font-size: 12px; border-top: 1px solid #e5e7eb; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Thanks for Reaching Out!</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${lead.name},</p>
+              <p>We've received your service request and a member of our team will be in touch shortly — typically within a few hours during business hours.</p>
+              ${lead.serviceRequested ? `
+              <div class="highlight">
+                <strong>Service Requested:</strong> ${lead.serviceRequested}
+              </div>
+              ` : ''}
+              <p>If you need immediate assistance or have an electrical emergency, don't hesitate to call us directly:</p>
+              <p><a href="tel:+15715321594" class="cta">Call (571) 532-1594</a></p>
+              <p style="margin-top: 20px;">We appreciate your trust in Velocity Electric and look forward to helping you!</p>
+              <p>Best regards,<br><strong>The Velocity Electric Team</strong><br>VA Licensed Master Electrician</p>
+            </div>
+            <div class="footer">
+              Velocity Electric | (571) 532-1594 | josh@velocityelectric.co
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    })
+
+    if (error) {
+      console.error('Auto-reply email error:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Auto-reply email service error:', error)
     return false
   }
 }
