@@ -142,16 +142,27 @@ export default async function ContactPage() {
         </div>
       </Section>
 
-      {/* Map Placeholder */}
+      {/* Map */}
       <Section background="surface" padding="sm">
         <div className="bg-white rounded-2xl overflow-hidden shadow-card">
-          <div className="aspect-video bg-gray-200 flex items-center justify-center">
-            <div className="text-center text-muted">
-              <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Map integration available</p>
-              <p className="text-sm">Add Google Maps API key to enable</p>
+          {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+            <iframe
+              className="w-full aspect-video"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(config.address)}&zoom=12`}
+              allowFullScreen
+            />
+          ) : (
+            <div className="aspect-video bg-gray-200 flex items-center justify-center">
+              <div className="text-center text-muted">
+                <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>Map integration available</p>
+                <p className="text-sm">Add Google Maps API key to enable</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </Section>
     </>
