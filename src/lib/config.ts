@@ -18,7 +18,7 @@ export interface SiteConfigData {
 const defaultConfig: SiteConfigData = {
   businessName: 'Velocity Electric',
   phone: '(571) 532-1594',
-  email: 'info@velocityelectric.com',
+  email: 'josh@velocityelectric.co',
   primaryArea: 'Metro Area',
   citiesServed: ['Springfield', 'Riverside', 'Oakville', 'Lakewood', 'Hillcrest'],
   hours: 'Mon-Fri 7AM-6PM, Sat 8AM-4PM',
