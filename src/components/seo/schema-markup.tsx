@@ -1,15 +1,26 @@
 import { getSiteConfig } from '@/lib/config'
+import { prisma } from '@/lib/db'
 
 export async function LocalBusinessSchema() {
-  const config = await getSiteConfig()
+  const [config, testimonials] = await Promise.all([
+    getSiteConfig(),
+    prisma.testimonial.aggregate({
+      where: { published: true },
+      _avg: { rating: true },
+      _count: { rating: true },
+    }),
+  ])
+
+  const ratingValue = testimonials._avg.rating ?? 5
+  const reviewCount = testimonials._count.rating
 
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Electrician',
-    '@id': process.env.NEXT_PUBLIC_SITE_URL || 'https://velocityelectric.com',
+    '@id': process.env.NEXT_PUBLIC_SITE_URL || 'https://velocityelectric.co',
     name: config.businessName,
     description: `${config.businessName} provides professional electrical services including repairs, installations, panel upgrades, EV charger installation, and emergency electrical service.`,
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velocityelectric.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://velocityelectric.co',
     telephone: config.phone,
     email: config.email,
     address: {
@@ -64,13 +75,15 @@ export async function LocalBusinessSchema() {
         },
       ],
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '5.0',
-      reviewCount: '500',
-      bestRating: '5',
-      worstRating: '1',
-    },
+    ...(reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: ratingValue.toFixed(1),
+        reviewCount: String(reviewCount),
+        bestRating: '5',
+        worstRating: '1',
+      },
+    }),
   }
 
   return (
