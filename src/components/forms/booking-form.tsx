@@ -55,6 +55,7 @@ export function BookingForm({ sourcePage, className }: BookingFormProps) {
       phone: '',
       email: '',
       city: '',
+      customerType: '',
       serviceRequested: '',
       message: '',
       sourcePage,
@@ -185,6 +186,22 @@ export function BookingForm({ sourcePage, className }: BookingFormProps) {
               error={errors.city?.message}
               className="mt-1"
             />
+          </div>
+
+          {/* Customer Type */}
+          <div>
+            <Label htmlFor="customerType">Residential or Commercial?</Label>
+            <Select
+              onValueChange={(value) => setValue('customerType', value as 'residential' | 'commercial')}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="residential">Residential</SelectItem>
+                <SelectItem value="commercial">Commercial</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Service */}

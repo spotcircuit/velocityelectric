@@ -9,6 +9,7 @@ interface LeadEmailData {
   phone: string
   email?: string
   city?: string
+  customerType?: string
   serviceRequested?: string
   message?: string
   sourcePage: string
@@ -72,6 +73,12 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<boolean
               <div class="field">
                 <div class="label">City</div>
                 <div class="value">${lead.city}</div>
+              </div>
+              ` : ''}
+              ${lead.customerType ? `
+              <div class="field">
+                <div class="label">Customer Type</div>
+                <div class="value">${lead.customerType === 'commercial' ? 'Commercial' : 'Residential'}</div>
               </div>
               ` : ''}
               ${lead.serviceRequested ? `

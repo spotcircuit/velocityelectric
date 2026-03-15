@@ -5,6 +5,7 @@ interface LeadData {
   phone: string
   email?: string | null
   city?: string | null
+  customerType?: string | null
   serviceRequested?: string | null
   message?: string | null
   sourcePage: string
@@ -43,6 +44,7 @@ export async function pushLeadToHubSpot(lead: LeadData): Promise<void> {
     lastname: lastName,
     phone: lead.phone,
     city: lead.city || '',
+    customer_type: lead.customerType || '',
   }
 
   // Only set email if provided (HubSpot uses email as unique key)

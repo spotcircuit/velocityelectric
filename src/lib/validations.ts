@@ -17,6 +17,7 @@ export const leadFormSchema = z.object({
     .optional()
     .or(z.literal('')),
   city: z.string().max(100, 'City name is too long').optional().or(z.literal('')),
+  customerType: z.enum(['residential', 'commercial']).optional().or(z.literal('')),
   serviceRequested: z.string().max(100, 'Service selection is too long').optional().or(z.literal('')),
   message: z.string().max(1000, 'Message must be less than 1000 characters').optional().or(z.literal('')),
   sourcePage: z.string().max(255),
