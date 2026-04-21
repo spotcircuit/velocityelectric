@@ -71,7 +71,13 @@ export async function POST(request: Request) {
 
   const provided = request.headers.get('x-inbound-secret')
   if (provided !== secret) {
-    console.warn('[INBOUND-EMAIL] bad secret')
+    const fingerprint = (s: string | null | undefined) =>
+      s ? `len=${s.length} first2=${s.slice(0, 2)} last2=${s.slice(-2)}` : 'null/empty'
+    console.warn('[INBOUND-EMAIL] bad secret', {
+      provided: fingerprint(provided),
+      expected: fingerprint(secret),
+      providedTrimmed: provided?.trim() === secret ? 'matches-after-trim' : 'no-match-even-trimmed',
+    })
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
