@@ -1,58 +1,46 @@
 /**
- * Cloudflare Email Worker — captures inbound emails to velocityelectric.co
- * addresses, parses MIME, POSTs the structured data to /api/inbound-email on the
- * Velocity site, then forwards the original email to Josh's primary inbox so he
- * still receives it personally.
+ * Cloudflare Email Worker — captures inbound emails to *@velocityelectric.co
+ * into the Velocity Electric site's lead pipeline, then forwards the original to
+ * Josh's primary inbox.
+ *
+ * NO npm imports — pasteable directly into Cloudflare Dashboard's Worker editor.
+ * MIME parsing happens server-side at /api/inbound-email (uses letterparser).
  *
  * SETUP:
- * 1. Cloudflare Dashboard → Email → Email Workers → Create Worker
- * 2. Paste this file as the worker source.
- * 3. Add `postal-mime` as an npm dependency in the worker (Settings → Variables → ?)
- *    Actually Workers uses package.json — easier route: deploy via wrangler with this
- *    file + a package.json that has postal-mime. Or use the inlined parser path below.
- * 4. Add Environment Variable INBOUND_SECRET (must match Vercel's INBOUND_SECRET).
- * 5. Cloudflare → Email → Routing Rules:
- *    - Edit `josh@velocityelectric.co` rule: change action from "Send to email"
- *      to "Send to Worker" → select this worker.
- *    - Edit catch-all: same change.
- *    - The worker itself re-forwards to capitalholding so nothing is lost.
- *
- * INBOUND_SECRET (set in Cloudflare Worker env):
- *   Match the value already saved at:
- *     - rebar:    /mnt/c/Users/Big Daddy Pyatt/rebar/system/.env  (INBOUND_SECRET_VELOCITY)
- *     - Vercel:   project velocityelectric, all 3 environments, key INBOUND_SECRET
+ * 1. Cloudflare Dashboard → Workers & Pages → Create Worker
+ *    - Click "Hello World!" template, name it `velocity-email-capture`
+ * 2. Replace the default code with the contents of THIS file.
+ * 3. Settings → Variables → Add:
+ *      INBOUND_SECRET = <value from rebar/system/.env line INBOUND_SECRET_VELOCITY>
+ *    Same value is already in Vercel envs as INBOUND_SECRET.
+ * 4. Save and Deploy.
+ * 5. Cloudflare → velocityelectric.co → Email → Routing → Routing Rules:
+ *      - Edit `josh@velocityelectric.co`: Action = Send to Worker → velocity-email-capture
+ *      - Edit catch-all: Action = Send to Worker → velocity-email-capture
+ *    The Worker forwards to capitalholding.com so Josh still receives the email.
  */
-
-import PostalMime from 'postal-mime'
 
 const VERCEL_ENDPOINT = 'https://www.velocityelectric.co/api/inbound-email'
 const FORWARD_TO = 'josh@velocitycapitalholding.com'
 
 export default {
-  /**
-   * @param {ForwardableEmailMessage} message
-   * @param {{ INBOUND_SECRET: string }} env
-   */
   async email(message, env) {
-    let parsed
+    // Read the raw RFC822 message from the stream.
+    let raw = ''
     try {
-      parsed = await PostalMime.parse(message.raw)
+      const reader = message.raw.getReader()
+      const decoder = new TextDecoder('utf-8', { fatal: false })
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        raw += decoder.decode(value, { stream: true })
+      }
+      raw += decoder.decode()
     } catch (err) {
-      console.error('postal-mime parse failed:', err)
-      // Still forward to Josh even if parse fails — don't drop email
-      await message.forward(FORWARD_TO)
-      return
+      console.error('raw read failed:', err)
     }
 
-    const fromObj = (parsed.from && typeof parsed.from === 'object') ? parsed.from : null
-    const fromAddress = fromObj?.address || message.from || ''
-    const fromName = fromObj?.name || ''
-    const subject = parsed.subject || message.headers.get('subject') || ''
-    const text = parsed.text || ''
-    const html = parsed.html || ''
-    const messageId = parsed.messageId || message.headers.get('message-id') || ''
-
-    // Best effort POST — never block the forward on this.
+    // Best-effort POST to Vercel — never block the forward on failure.
     try {
       const res = await fetch(VERCEL_ENDPOINT, {
         method: 'POST',
@@ -61,14 +49,11 @@ export default {
           'x-inbound-secret': env.INBOUND_SECRET,
         },
         body: JSON.stringify({
-          from: message.from,
-          fromName,
-          fromAddress,
-          to: message.to,
-          subject,
-          text,
-          html,
-          messageId,
+          raw,
+          fromHint: message.from,
+          toHint: message.to,
+          subject: message.headers.get('subject') || '',
+          messageId: message.headers.get('message-id') || '',
         }),
       })
       if (!res.ok) {
@@ -78,7 +63,7 @@ export default {
       console.error('inbound-email POST threw:', err)
     }
 
-    // Always forward the email itself to Josh — capture pipeline is purely additive.
+    // ALWAYS forward — capture is purely additive, delivery is mandatory.
     try {
       await message.forward(FORWARD_TO)
     } catch (err) {

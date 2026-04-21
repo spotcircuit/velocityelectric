@@ -9,19 +9,27 @@
 // so Josh still receives the email itself in his inbox.
 
 import { NextResponse } from 'next/server'
+import { extract as parseEmail } from 'letterparser'
 import { prisma } from '@/lib/db'
 import { qualifyLead } from '@/lib/qualify'
 import { pushLeadToHubSpot } from '@/lib/hubspot'
 
+// The Cloudflare Worker sends one of two payload shapes:
+//   - parsed:  {from, fromName, fromAddress, to, subject, text, html, messageId}
+//   - raw:     {raw: <full RFC 822 message>, fromHint, toHint}
+// We accept both and normalize.
 interface InboundEmailPayload {
-  from: string             // "John Doe <john@example.com>" or just "john@example.com"
-  fromName?: string | null // parsed display name
-  fromAddress?: string     // parsed email-only
+  from?: string
+  fromName?: string | null
+  fromAddress?: string
   to?: string | null
   subject?: string | null
   text?: string | null
   html?: string | null
   messageId?: string | null
+  raw?: string  // full MIME — server-side parsing path
+  fromHint?: string
+  toHint?: string
 }
 
 // Extract a US-style phone number from free-form text. Matches:
@@ -72,6 +80,26 @@ export async function POST(request: Request) {
     payload = await request.json()
   } catch {
     return NextResponse.json({ error: 'invalid json' }, { status: 400 })
+  }
+
+  // If the worker sent raw MIME, parse it server-side.
+  if (payload.raw && (!payload.text && !payload.html)) {
+    try {
+      const result = parseEmail(payload.raw)
+      payload.text = result.text || null
+      payload.html = result.html || null
+      payload.subject = payload.subject || result.subject || null
+      payload.from = payload.from || (result.from?.raw || payload.fromHint || '')
+      const toField = result.to as unknown
+      const toRaw = Array.isArray(toField)
+        ? (toField[0] as { raw?: string } | undefined)?.raw
+        : (toField as { raw?: string } | undefined)?.raw
+      payload.to = payload.to || toRaw || payload.toHint || null
+    } catch (err) {
+      console.warn('[INBOUND-EMAIL] letterparser failed, using hints:', err)
+      payload.from = payload.from || payload.fromHint || ''
+      payload.to = payload.to || payload.toHint || null
+    }
   }
 
   const parsed = parseFromHeader(payload.from || '')
