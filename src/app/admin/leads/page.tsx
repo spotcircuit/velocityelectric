@@ -27,7 +27,12 @@ async function checkAuth() {
 }
 
 function whereForFilter(filter: FilterValue) {
-  if (filter === 'not_notified') return { ownerNotifiedAt: null, qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } }
+  // "Not notified" = real leads waiting on Josh. Excludes junk (SPAM/TEST/VENDOR).
+  // Includes unclassified (qualification IS NULL) so legacy leads appear pre-backfill.
+  if (filter === 'not_notified') return {
+    ownerNotifiedAt: null,
+    NOT: { qualification: { in: [LeadCategory.SPAM, LeadCategory.TEST, LeadCategory.VENDOR] } },
+  }
   if (filter === 'notified') return { ownerNotifiedAt: { not: null } }
   if (filter === 'errored') return { ownerNotifyError: { not: null }, ownerNotifiedAt: null }
   if (filter === 'qualified') return { qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } }
@@ -50,7 +55,12 @@ async function getLeads(filter: FilterValue) {
 async function getCounts() {
   const [total, notNotified, errored, qualified, residential, commercial, spam, vendor, outOfScope, test] = await Promise.all([
     prisma.lead.count(),
-    prisma.lead.count({ where: { ownerNotifiedAt: null, qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } } }),
+    prisma.lead.count({
+      where: {
+        ownerNotifiedAt: null,
+        NOT: { qualification: { in: [LeadCategory.SPAM, LeadCategory.TEST, LeadCategory.VENDOR] } },
+      },
+    }),
     prisma.lead.count({ where: { ownerNotifyError: { not: null }, ownerNotifiedAt: null } }),
     prisma.lead.count({ where: { qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } } }),
     prisma.lead.count({ where: { qualification: 'RESIDENTIAL' } }),
