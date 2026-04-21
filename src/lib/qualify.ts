@@ -43,11 +43,37 @@ const SERVICE_AREA_PRIMARY = new Set(
     'Winchester', 'Reston', 'Manassas', 'Woodbridge'].map((c) => c.toLowerCase())
 )
 const SERVICE_AREA_EXTENDED = new Set(
+  // Primary NoVA + everything within ~45min drive of the primary service area.
+  // When in doubt, ADD the city. Better to mark a faraway lead RESIDENTIAL with low
+  // confidence and let Josh review than to silently mark a real lead OUT_OF_SCOPE.
   ['Herndon', 'Aldie', 'Centreville', 'Chantilly', 'Great Falls', 'Mclean',
     'Mc Lean', 'Falls Church', 'Arlington', 'Alexandria', 'Annandale', 'Springfield',
     'Burke', 'Lorton', 'Dulles', 'Stone Ridge', 'Brambleton', 'South Riding',
-    'Ashburn', 'Bristow', 'Gainesville', 'Haymarket', 'Warrenton'].map((c) => c.toLowerCase())
+    'Ashburn', 'Bristow', 'Gainesville', 'Haymarket', 'Warrenton',
+    // Loudoun + Warren County + Frederick County (Winchester area) extensions:
+    'Linden', 'Front Royal', 'Strasburg', 'Berryville', 'Stephens City',
+    'Middletown', 'Boyce', 'Round Hill', 'Hamilton', 'Lovettsville', 'Lucketts',
+    'Hillsboro', 'Bluemont', 'Paris', 'Upperville', 'Marshall', 'The Plains',
+    'Delaplane', 'Markham', 'Flint Hill', 'Chester Gap', 'Linden Va',
+    // Prince William + Fauquier:
+    'Manassas Park', 'Nokesville', 'Catlett', 'Bealeton', 'Remington', 'Midland',
+    // DC border cities (residential customers commute to NoVA):
+    'Washington', 'Bethesda', 'Silver Spring', 'Rockville', 'Tysons', 'Vienna Va',
+  ].map((c) => c.toLowerCase())
 )
+
+// Hard out-of-scope signals: cities/states clearly far from NoVA.
+// If city is in this list OR ends with a known-far state → OUT_OF_SCOPE confidently.
+const FAR_OUT_OF_AREA_KEYWORDS = [
+  'new york', 'nyc', 'los angeles', 'san francisco', 'chicago', 'houston',
+  'miami', 'seattle', 'boston', 'philadelphia', 'phoenix', 'atlanta',
+  'dallas', 'denver', 'austin', 'portland', 'minneapolis', 'detroit',
+]
+function isClearlyFarAway(city?: string | null): boolean {
+  if (!city) return false
+  const c = city.trim().toLowerCase()
+  return FAR_OUT_OF_AREA_KEYWORDS.some((kw) => c.includes(kw))
+}
 
 // Domains we know are us, or are vendors pitching us, never customers.
 const SELF_DOMAINS = new Set([
@@ -234,25 +260,32 @@ function ruleBasedClassify(lead: LeadInput): QualifyResult {
     }
   }
 
-  // ---- OUT_OF_SCOPE: city outside service area + extended (low confidence)
-  if (cityClass === 'unknown' && (hasEmail || phoneOk)) {
+  // ---- OUT_OF_SCOPE: only when CLEARLY far (NYC/LA/etc.). Unknown VA-area cities
+  // fall through to RESIDENTIAL with low confidence — better to surface for review
+  // than silently sideline a real customer who happens to live in a small VA town.
+  if (isClearlyFarAway(lead.city)) {
     return {
       category: 'OUT_OF_SCOPE',
-      confidence: 0.6,
-      reason: `City "${lead.city}" not in service area or nearby NoVA`,
+      confidence: 0.9,
+      reason: `City "${lead.city}" is clearly outside our service region`,
       source: 'rule',
     }
   }
 
-  // ---- RESIDENTIAL default — has at least name + (email or valid phone) + in-area or no-city
+  // ---- RESIDENTIAL default — has at least name + (email or valid phone)
   if (name && (hasEmail || phoneOk)) {
     return {
       category: 'RESIDENTIAL',
-      confidence: cityClass === 'primary' ? 0.85 : cityClass === 'extended' ? 0.75 : 0.6,
-      reason: `Real-looking name + contact, ${
-        cityClass === 'primary' ? 'in primary service area' :
-        cityClass === 'extended' ? 'in extended NoVA area' :
-        cityClass === 'no_city' ? 'no city given' : 'unknown city'
+      confidence:
+        cityClass === 'primary' ? 0.85 :
+        cityClass === 'extended' ? 0.75 :
+        cityClass === 'no_city' ? 0.65 :
+        0.55, // unknown VA city — likely real but flag for review
+      reason: `Real-looking name + contact${
+        cityClass === 'primary' ? ', in primary service area' :
+        cityClass === 'extended' ? ', in extended NoVA area' :
+        cityClass === 'no_city' ? ', no city given' :
+        `, city "${lead.city}" not in known list — review`
       }`,
       source: 'rule',
     }
