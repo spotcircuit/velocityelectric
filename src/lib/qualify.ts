@@ -75,6 +75,13 @@ function isClearlyFarAway(city?: string | null): boolean {
   return FAR_OUT_OF_AREA_KEYWORDS.some((kw) => c.includes(kw))
 }
 
+// Specific email addresses that always represent internal testing — never a real customer.
+// Add to this list when a tester gets misclassified.
+const KNOWN_TEST_EMAILS = new Set([
+  'novahokie1998@gmail.com',  // Brian (operator)
+  'brian@spotcircuit.com',     // Brian (work)
+])
+
 // Domains we know are us, or are vendors pitching us, never customers.
 const SELF_DOMAINS = new Set([
   'velocityelectric.co',
@@ -165,7 +172,15 @@ function ruleBasedClassify(lead: LeadInput): QualifyResult {
   const hasEmail = !!email
   const hasPhone = !!lead.phone
 
-  // ---- TEST: self-domain emails (josh testing his own form)
+  // ---- TEST: known internal test email (Brian's emails) or self-domain emails
+  if (email && KNOWN_TEST_EMAILS.has(email.toLowerCase().trim())) {
+    return {
+      category: 'TEST',
+      confidence: 0.99,
+      reason: `Known internal test email (${email})`,
+      source: 'rule',
+    }
+  }
   if (domain && SELF_DOMAINS.has(domain)) {
     return {
       category: 'TEST',
