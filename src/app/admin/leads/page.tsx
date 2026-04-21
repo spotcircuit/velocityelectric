@@ -6,6 +6,8 @@ import { LeadCategory } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { reclassifyLead, markLeadTriaged, unmarkLeadTriaged, bulkMarkAllTriaged } from '@/app/actions/admin'
+import { Check, RotateCcw } from 'lucide-react'
 
 type FilterValue =
   | 'all'
@@ -27,10 +29,11 @@ async function checkAuth() {
 }
 
 function whereForFilter(filter: FilterValue) {
-  // "Not notified" = real leads waiting on Josh. Excludes junk (SPAM/TEST/VENDOR).
-  // Includes unclassified (qualification IS NULL) so legacy leads appear pre-backfill.
+  // "Not notified" = real leads waiting on Josh. Excludes junk (SPAM/TEST/VENDOR)
+  // AND triaged leads (operator already handled them).
   if (filter === 'not_notified') return {
     ownerNotifiedAt: null,
+    triagedAt: null,
     NOT: { qualification: { in: [LeadCategory.SPAM, LeadCategory.TEST, LeadCategory.VENDOR] } },
   }
   if (filter === 'notified') return { ownerNotifiedAt: { not: null } }
@@ -58,6 +61,7 @@ async function getCounts() {
     prisma.lead.count({
       where: {
         ownerNotifiedAt: null,
+        triagedAt: null,
         NOT: { qualification: { in: [LeadCategory.SPAM, LeadCategory.TEST, LeadCategory.VENDOR] } },
       },
     }),
@@ -125,7 +129,20 @@ export default async function AdminLeadsPage({
             Default view shows leads where Josh has not received an owner notification email.
           </p>
         </div>
-        <Badge variant="secondary">{counts.total} Total</Badge>
+        <div className="flex items-center gap-3">
+          {filter === 'not_notified' && counts.notNotified > 1 && (
+            <form action={bulkMarkAllTriaged}>
+              <button
+                type="submit"
+                className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 hover:border-accent hover:text-accent text-muted"
+                title="Mark all currently-shown 'Not notified' leads as triaged. Useful for clearing the historical pre-fix backlog."
+              >
+                Bulk: mark all triaged
+              </button>
+            </form>
+          )}
+          <Badge variant="secondary">{counts.total} Total</Badge>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -197,6 +214,59 @@ export default async function AdminLeadsPage({
                         <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
                           <BellOff className="h-3 w-3" /> Not notified
                         </span>
+                      )}
+                      {lead.triagedAt && (
+                        <span className="inline-flex items-center gap-1 text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full">
+                          <Check className="h-3 w-3" /> Triaged
+                          {lead.triagedBy && <span className="opacity-60 ml-1">by {lead.triagedBy}</span>}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Inline action controls — reclassify + triage */}
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <form action={reclassifyLead} className="flex items-center gap-1">
+                        <input type="hidden" name="leadId" value={lead.id} />
+                        <label className="text-xs text-muted">Reclassify:</label>
+                        <select
+                          name="category"
+                          defaultValue={lead.qualification || 'RESIDENTIAL'}
+                          className="text-xs border border-gray-300 rounded px-1 py-0.5"
+                        >
+                          <option value="RESIDENTIAL">Residential</option>
+                          <option value="COMMERCIAL">Commercial</option>
+                          <option value="OUT_OF_SCOPE">Out of scope</option>
+                          <option value="VENDOR">Vendor</option>
+                          <option value="SPAM">Spam</option>
+                          <option value="TEST">Test</option>
+                        </select>
+                        <button
+                          type="submit"
+                          className="text-xs px-2 py-0.5 rounded border border-gray-300 hover:border-accent hover:text-accent text-muted"
+                        >
+                          Save
+                        </button>
+                      </form>
+                      {lead.triagedAt ? (
+                        <form action={unmarkLeadTriaged}>
+                          <input type="hidden" name="leadId" value={lead.id} />
+                          <button
+                            type="submit"
+                            className="text-xs px-2 py-0.5 rounded border border-gray-300 hover:border-accent hover:text-accent text-muted inline-flex items-center gap-1"
+                          >
+                            <RotateCcw className="h-3 w-3" /> Untriage
+                          </button>
+                        </form>
+                      ) : (
+                        <form action={markLeadTriaged}>
+                          <input type="hidden" name="leadId" value={lead.id} />
+                          <button
+                            type="submit"
+                            className="text-xs px-2 py-0.5 rounded border border-gray-300 hover:border-accent hover:text-accent text-muted inline-flex items-center gap-1"
+                          >
+                            <Check className="h-3 w-3" /> Mark triaged
+                          </button>
+                        </form>
                       )}
                     </div>
                     <div className="flex flex-wrap gap-4 text-sm">

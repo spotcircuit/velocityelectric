@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
+import { LeadCategory } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { clearConfigCache } from '@/lib/config'
 import { postToGoogleBusiness } from '@/lib/google-business'
@@ -396,6 +397,70 @@ export async function deleteBlogPost(formData: FormData) {
   revalidatePath('/admin/blog')
   revalidatePath('/blog')
   redirect('/admin/blog')
+}
+
+// Leads — manual triage + reclassify
+
+const VALID_CATEGORIES: ReadonlyArray<LeadCategory> = [
+  'SPAM', 'TEST', 'VENDOR', 'OUT_OF_SCOPE', 'RESIDENTIAL', 'COMMERCIAL',
+]
+
+export async function reclassifyLead(formData: FormData) {
+  await checkAdminAuth()
+  const id = formData.get('leadId') as string
+  const newCategory = formData.get('category') as string
+  if (!VALID_CATEGORIES.includes(newCategory as LeadCategory)) {
+    throw new Error(`Invalid category: ${newCategory}`)
+  }
+  await prisma.lead.update({
+    where: { id },
+    data: {
+      qualification: newCategory as LeadCategory,
+      qualificationReason: `Manually reclassified by admin to ${newCategory}`,
+      qualificationConfidence: 1.0,
+      qualifiedAt: new Date(),
+    },
+  })
+  revalidatePath('/admin/leads')
+  revalidatePath('/admin')
+}
+
+export async function markLeadTriaged(formData: FormData) {
+  await checkAdminAuth()
+  const id = formData.get('leadId') as string
+  await prisma.lead.update({
+    where: { id },
+    data: { triagedAt: new Date(), triagedBy: 'admin' },
+  })
+  revalidatePath('/admin/leads')
+  revalidatePath('/admin')
+}
+
+export async function unmarkLeadTriaged(formData: FormData) {
+  await checkAdminAuth()
+  const id = formData.get('leadId') as string
+  await prisma.lead.update({
+    where: { id },
+    data: { triagedAt: null, triagedBy: null },
+  })
+  revalidatePath('/admin/leads')
+  revalidatePath('/admin')
+}
+
+export async function bulkMarkAllTriaged(_formData: FormData): Promise<void> {
+  await checkAdminAuth()
+  // Sweep all currently-not-notified, not-junk leads as triaged. Useful one-time
+  // for clearing the historical pre-fix backlog.
+  await prisma.lead.updateMany({
+    where: {
+      triagedAt: null,
+      ownerNotifiedAt: null,
+      NOT: { qualification: { in: ['SPAM', 'TEST', 'VENDOR'] } },
+    },
+    data: { triagedAt: new Date(), triagedBy: 'admin-bulk' },
+  })
+  revalidatePath('/admin/leads')
+  revalidatePath('/admin')
 }
 
 // Site Config

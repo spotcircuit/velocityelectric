@@ -151,6 +151,10 @@ export async function POST(request: Request) {
         serviceRequested: null, // emails don't map to a single service slug
         message,
         sourcePage: payload.messageId ? `email:${payload.messageId}` : `email:${senderEmail}`,
+        // For inbound email: the email arriving in Josh's inbox IS the notification
+        // (Cloudflare Worker forwards to capitalholding alongside this capture).
+        // So we never run sendLeadNotification for these — mark notified immediately.
+        ownerNotifiedAt: new Date(),
       },
     })
     console.log('[INBOUND-EMAIL] lead.create OK', { leadId: lead.id })

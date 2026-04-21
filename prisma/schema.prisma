@@ -33,6 +33,8 @@ model Lead {
   qualificationReason         String?       // human-readable why
   qualificationConfidence     Float?        // 0..1
   qualifiedAt                 DateTime?
+  triagedAt                   DateTime? // operator marked this as handled — clears from Not-notified queue
+  triagedBy                   String?
   hubspotContactId            String?
   hubspotCompanyId            String?
   hubspotDealId               String?
