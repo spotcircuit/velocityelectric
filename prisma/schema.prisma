@@ -8,19 +8,33 @@ datasource db {
 }
 
 model Lead {
-  id               String   @id @default(cuid())
-  name             String
-  phone            String
-  email            String?
-  city             String?
-  serviceRequested String?
-  message          String?
-  sourcePage       String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                          String    @id @default(cuid())
+  name                        String
+  phone                       String
+  email                       String?
+  city                        String?
+  serviceRequested            String?
+  message                     String?
+  sourcePage                  String
+  // Owner-notification email lifecycle (set synchronously on send + by Resend webhook):
+  ownerNotifyMessageId        String?   // Resend email id for webhook correlation
+  ownerNotifiedAt             DateTime? // when Resend accepted the send
+  ownerNotifyDeliveredAt      DateTime? // recipient mail server accepted
+  ownerNotifyBouncedAt        DateTime?
+  ownerNotifyComplainedAt     DateTime?
+  ownerNotifyDelayedAt        DateTime?
+  ownerNotifyOpenedAt         DateTime?
+  ownerNotifyClickedAt        DateTime?
+  ownerNotifyFailedAt         DateTime?
+  ownerNotifySuppressedAt     DateTime?
+  ownerNotifyError            String?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
 
   @@index([createdAt])
   @@index([phone])
+  @@index([ownerNotifiedAt])
+  @@index([ownerNotifyMessageId])
 }
 
 model Testimonial {

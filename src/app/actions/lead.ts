@@ -67,9 +67,29 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       sourcePage: lead.sourcePage,
     }
 
-    sendLeadNotification(leadEmailData).catch((error) => {
-      console.error('Failed to send lead notification email:', error)
-    })
+    // Owner notification: await + persist outcome so the admin /leads UI can
+    // surface notifications that never reached Josh. Tags carry lead_id so the
+    // Resend webhook can update delivery/bounce/click status later.
+    sendLeadNotification(leadEmailData, lead.id)
+      .then(async (result) => {
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: result.ok
+            ? {
+                ownerNotifiedAt: new Date(),
+                ownerNotifyMessageId: result.messageId ?? null,
+                ownerNotifyError: null,
+              }
+            : { ownerNotifyError: (result.error || 'unknown error').slice(0, 500) },
+        }).catch((e) => console.error('Failed to record notify outcome:', e))
+      })
+      .catch((error) => {
+        console.error('Failed to send lead notification email:', error)
+        prisma.lead.update({
+          where: { id: lead.id },
+          data: { ownerNotifyError: (error instanceof Error ? error.message : String(error)).slice(0, 500) },
+        }).catch((e) => console.error('Failed to record notify failure:', e))
+      })
 
     // Send auto-reply to customer (async, don't wait)
     sendCustomerAutoReply(leadEmailData).catch((error) => {

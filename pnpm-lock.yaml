@@ -71,6 +71,9 @@ importers:
       resend:
         specifier: ^6.8.0
         version: 6.8.0(@react-email/render@0.0.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
+      svix:
+        specifier: ^1.91.1
+        version: 1.91.1
       tailwind-merge:
         specifier: ^2.2.1
         version: 2.6.0
@@ -2913,6 +2916,9 @@ packages:
 
   svix@1.84.1:
     resolution: {integrity: sha512-K8DPPSZaW/XqXiz1kEyzSHYgmGLnhB43nQCMeKjWGCUpLIpAMMM8kx3rVVOSm6Bo6EHyK1RQLPT4R06skM/MlQ==}
+
+  svix@1.91.1:
+    resolution: {integrity: sha512-Vn8nuer+o3NhGLHJNW3CPxls3te8YLr0xC3ImfcksG7taC/A+o8+PcVAK4sj1LJs4kM9HdmkXBnS3WU4E0YHHA==}
 
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
@@ -5987,6 +5993,11 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   svix@1.84.1:
+    dependencies:
+      standardwebhooks: 1.0.0
+      uuid: 10.0.0
+
+  svix@1.91.1:
     dependencies:
       standardwebhooks: 1.0.0
       uuid: 10.0.0

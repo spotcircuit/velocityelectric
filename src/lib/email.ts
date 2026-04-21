@@ -15,23 +15,30 @@ interface LeadEmailData {
   sourcePage: string
 }
 
-export async function sendLeadNotification(lead: LeadEmailData): Promise<boolean> {
+export interface SendResult {
+  ok: boolean
+  error?: string
+  messageId?: string
+}
+
+export async function sendLeadNotification(lead: LeadEmailData, leadId?: string): Promise<SendResult> {
   const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL
 
   if (!resend || !ownerEmail) {
-    console.log('📧 Email notification (dev mode):', {
-      to: ownerEmail || 'NOT_CONFIGURED',
-      subject: `New Lead: ${lead.name}`,
-      lead,
-    })
-    return true
+    const reason = !resend ? 'RESEND_API_KEY not configured' : 'OWNER_NOTIFICATION_EMAIL not configured'
+    console.warn('📧 Email notification SKIPPED —', reason, { leadName: lead.name })
+    return { ok: false, error: reason }
   }
 
   try {
-    const { error } = await resend.emails.send({
-      from: 'Velocity Electric <josh@velocityelectric.co>',
+    const { data, error } = await resend.emails.send({
+      from: 'Velocity Electric Leads <leads@velocityelectric.co>',
       replyTo: 'josh@velocityelectric.co',
       to: ownerEmail,
+      tags: [
+        { name: 'kind', value: 'owner_notification' },
+        ...(leadId ? [{ name: 'lead_id', value: leadId }] : []),
+      ],
       subject: `🔔 New Lead: ${lead.name} - ${lead.serviceRequested || 'General Inquiry'}`,
       html: `
         <!DOCTYPE html>
@@ -110,13 +117,13 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<boolean
 
     if (error) {
       console.error('Email send error:', error)
-      return false
+      return { ok: false, error: JSON.stringify(error) }
     }
 
-    return true
+    return { ok: true, messageId: data?.id }
   } catch (error) {
     console.error('Email service error:', error)
-    return false
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
   }
 }
 
@@ -127,7 +134,7 @@ export async function sendCustomerAutoReply(lead: LeadEmailData): Promise<boolea
 
   try {
     const { error } = await resend.emails.send({
-      from: 'Velocity Electric <josh@velocityelectric.co>',
+      from: 'Velocity Electric <hello@velocityelectric.co>',
       replyTo: 'josh@velocityelectric.co',
       to: lead.email,
       subject: `Thanks for contacting Velocity Electric!`,
