@@ -2,11 +2,23 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Phone, Mail, MapPin, FileText, Calendar, BellOff, BellRing, AlertTriangle, MailCheck, MailX, MousePointerClick, Eye, Clock } from 'lucide-react'
+import { LeadCategory } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-type FilterValue = 'all' | 'not_notified' | 'notified' | 'errored'
+type FilterValue =
+  | 'all'
+  | 'not_notified'
+  | 'notified'
+  | 'errored'
+  | 'qualified'    // RESIDENTIAL or COMMERCIAL
+  | 'residential'
+  | 'commercial'
+  | 'spam'
+  | 'vendor'
+  | 'out_of_scope'
+  | 'test'
 
 async function checkAuth() {
   const cookieStore = await cookies()
@@ -15,9 +27,16 @@ async function checkAuth() {
 }
 
 function whereForFilter(filter: FilterValue) {
-  if (filter === 'not_notified') return { ownerNotifiedAt: null }
+  if (filter === 'not_notified') return { ownerNotifiedAt: null, qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } }
   if (filter === 'notified') return { ownerNotifiedAt: { not: null } }
   if (filter === 'errored') return { ownerNotifyError: { not: null }, ownerNotifiedAt: null }
+  if (filter === 'qualified') return { qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } }
+  if (filter === 'residential') return { qualification: 'RESIDENTIAL' as const }
+  if (filter === 'commercial') return { qualification: 'COMMERCIAL' as const }
+  if (filter === 'spam') return { qualification: 'SPAM' as const }
+  if (filter === 'vendor') return { qualification: 'VENDOR' as const }
+  if (filter === 'out_of_scope') return { qualification: 'OUT_OF_SCOPE' as const }
+  if (filter === 'test') return { qualification: 'TEST' as const }
   return {}
 }
 
@@ -29,12 +48,28 @@ async function getLeads(filter: FilterValue) {
 }
 
 async function getCounts() {
-  const [total, notNotified, errored] = await Promise.all([
+  const [total, notNotified, errored, qualified, residential, commercial, spam, vendor, outOfScope, test] = await Promise.all([
     prisma.lead.count(),
-    prisma.lead.count({ where: { ownerNotifiedAt: null } }),
+    prisma.lead.count({ where: { ownerNotifiedAt: null, qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } } }),
     prisma.lead.count({ where: { ownerNotifyError: { not: null }, ownerNotifiedAt: null } }),
+    prisma.lead.count({ where: { qualification: { in: [LeadCategory.RESIDENTIAL, LeadCategory.COMMERCIAL] } } }),
+    prisma.lead.count({ where: { qualification: 'RESIDENTIAL' } }),
+    prisma.lead.count({ where: { qualification: 'COMMERCIAL' } }),
+    prisma.lead.count({ where: { qualification: 'SPAM' } }),
+    prisma.lead.count({ where: { qualification: 'VENDOR' } }),
+    prisma.lead.count({ where: { qualification: 'OUT_OF_SCOPE' } }),
+    prisma.lead.count({ where: { qualification: 'TEST' } }),
   ])
-  return { total, notNotified, errored }
+  return { total, notNotified, errored, qualified, residential, commercial, spam, vendor, outOfScope, test }
+}
+
+const CATEGORY_STYLES: Record<string, { label: string; cls: string }> = {
+  RESIDENTIAL:  { label: 'Residential',   cls: 'text-blue-700 bg-blue-50' },
+  COMMERCIAL:   { label: 'Commercial',    cls: 'text-emerald-700 bg-emerald-50' },
+  OUT_OF_SCOPE: { label: 'Out of scope',  cls: 'text-amber-700 bg-amber-50' },
+  VENDOR:       { label: 'Vendor pitch',  cls: 'text-gray-700 bg-gray-100' },
+  SPAM:         { label: 'Spam',          cls: 'text-red-700 bg-red-50' },
+  TEST:         { label: 'Test',          cls: 'text-purple-700 bg-purple-50' },
 }
 
 export default async function AdminLeadsPage({
@@ -46,17 +81,28 @@ export default async function AdminLeadsPage({
   if (!isAuthenticated) redirect('/admin/login')
 
   const params = await searchParams
-  const allowed: FilterValue[] = ['all', 'not_notified', 'notified', 'errored']
+  const allowed: FilterValue[] = [
+    'all', 'not_notified', 'notified', 'errored',
+    'qualified', 'residential', 'commercial',
+    'spam', 'vendor', 'out_of_scope', 'test',
+  ]
   const filter: FilterValue = (allowed as string[]).includes(params.filter || '')
     ? (params.filter as FilterValue)
-    : 'not_notified' // default view: things Josh hasn't been emailed about
+    : 'not_notified' // default: real leads Josh hasn't been emailed about
 
   const [leads, counts] = await Promise.all([getLeads(filter), getCounts()])
 
-  const tabs: Array<{ value: FilterValue; label: string; count?: number }> = [
-    { value: 'not_notified', label: 'Not notified', count: counts.notNotified },
-    { value: 'errored', label: 'Send errors', count: counts.errored },
-    { value: 'notified', label: 'Notified' },
+  const tabs: Array<{ value: FilterValue; label: string; count?: number; group?: 'notify' | 'category' }> = [
+    { value: 'not_notified', label: 'Not notified', count: counts.notNotified, group: 'notify' },
+    { value: 'errored', label: 'Send errors', count: counts.errored, group: 'notify' },
+    { value: 'notified', label: 'Notified', group: 'notify' },
+    { value: 'qualified', label: 'Qualified', count: counts.qualified, group: 'category' },
+    { value: 'residential', label: 'Residential', count: counts.residential, group: 'category' },
+    { value: 'commercial', label: 'Commercial', count: counts.commercial, group: 'category' },
+    { value: 'out_of_scope', label: 'Out of scope', count: counts.outOfScope, group: 'category' },
+    { value: 'vendor', label: 'Vendor', count: counts.vendor, group: 'category' },
+    { value: 'spam', label: 'Spam', count: counts.spam, group: 'category' },
+    { value: 'test', label: 'Test', count: counts.test, group: 'category' },
     { value: 'all', label: 'All', count: counts.total },
   ]
 
@@ -120,6 +166,14 @@ export default async function AdminLeadsPage({
                   <div className="space-y-2 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-semibold text-primary text-lg">{lead.name}</h3>
+                      {lead.qualification && CATEGORY_STYLES[lead.qualification] && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_STYLES[lead.qualification].cls}`}>
+                          {CATEGORY_STYLES[lead.qualification].label}
+                          {lead.qualificationConfidence !== null && lead.qualificationConfidence !== undefined && (
+                            <span className="opacity-60 ml-1">{Math.round(lead.qualificationConfidence * 100)}%</span>
+                          )}
+                        </span>
+                      )}
                       {lead.serviceRequested && <Badge>{lead.serviceRequested}</Badge>}
                       {lead.ownerNotifiedAt ? (
                         <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
@@ -155,6 +209,20 @@ export default async function AdminLeadsPage({
                     </div>
                     {lead.message && (
                       <p className="text-muted text-sm mt-2 bg-surface p-3 rounded-lg">{lead.message}</p>
+                    )}
+                    {lead.qualificationReason && (
+                      <p className="text-muted text-xs mt-1 italic">
+                        Why: {lead.qualificationReason}
+                      </p>
+                    )}
+                    {(lead.hubspotContactId || lead.hubspotCompanyId || lead.hubspotDealId) && (
+                      <p className="text-muted text-xs mt-1">
+                        HubSpot: {[
+                          lead.hubspotContactId && `contact ${lead.hubspotContactId}`,
+                          lead.hubspotCompanyId && `company ${lead.hubspotCompanyId}`,
+                          lead.hubspotDealId && `deal ${lead.hubspotDealId}`,
+                        ].filter(Boolean).join(' · ')}
+                      </p>
                     )}
                     {lead.ownerNotifyError && (
                       <p className="text-red-700 text-xs mt-2 bg-red-50 p-2 rounded font-mono break-all">

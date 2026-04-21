@@ -6,6 +6,7 @@ import { sendLeadNotification, sendCustomerAutoReply } from '@/lib/email'
 import { rateLimit, getClientIP } from '@/lib/rate-limit'
 import { leadFormSchema, type LeadFormData } from '@/lib/validations'
 import { pushLeadToHubSpot } from '@/lib/hubspot'
+import { qualifyLead } from '@/lib/qualify'
 
 interface SubmitLeadResult {
   success: boolean
@@ -56,7 +57,33 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
     })
     console.log('[LEAD-DEBUG] lead.create OK', { leadId: lead.id })
 
-    // Send email notification (async, don't wait)
+    // Qualify the lead BEFORE side-effects so we can route SPAM/TEST/VENDOR away
+    // from Resend + HubSpot entirely.
+    const qual = await qualifyLead({
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      city: lead.city,
+      customerType: validated.data.customerType || null,
+      serviceRequested: lead.serviceRequested,
+      message: lead.message,
+      sourcePage: lead.sourcePage,
+    })
+    console.log('[LEAD-DEBUG] qualified', { leadId: lead.id, qual })
+
+    // Persist qualification immediately so it's never lost even if later steps fail.
+    await prisma.lead.update({
+      where: { id: lead.id },
+      data: {
+        qualification: qual.category,
+        qualificationReason: qual.reason.slice(0, 500),
+        qualificationConfidence: qual.confidence,
+        qualifiedAt: new Date(),
+      },
+    }).catch((e) => console.error('[LEAD-DEBUG] Failed to persist qualification:', e))
+
+    const isJunk = qual.category === 'SPAM' || qual.category === 'TEST' || qual.category === 'VENDOR'
+
     const leadEmailData = {
       name: lead.name,
       phone: lead.phone,
@@ -68,10 +95,15 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       sourcePage: lead.sourcePage,
     }
 
+    // For junk leads: skip ALL side-effects. Lead row stays in Postgres with
+    // qualification flag for audit; no email noise to Josh, no HubSpot pollution.
+    if (isJunk) {
+      console.log('[LEAD-DEBUG] junk lead — skipping all side-effects', { leadId: lead.id, category: qual.category })
+      return { success: true }
+    }
+
     // Run side-effects in parallel and AWAIT them. Fire-and-forget gets killed
-    // by Vercel's serverless lifecycle after the Server Action returns —
-    // promises in .then() callbacks silently never run. Awaiting adds ~1s to
-    // form submission but guarantees the DB capture and HubSpot push complete.
+    // by Vercel's serverless lifecycle after the Server Action returns.
     console.log('[LEAD-DEBUG] starting Promise.allSettled', { leadId: lead.id })
     const [ownerResult, autoReplyResult, hubspotResult] = await Promise.allSettled([
       sendLeadNotification(leadEmailData, lead.id),
@@ -85,6 +117,8 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
         serviceRequested: lead.serviceRequested,
         message: lead.message,
         sourcePage: lead.sourcePage,
+        qualification: qual.category,
+        qualificationReason: qual.reason,
       }),
     ])
     console.log('[LEAD-DEBUG] Promise.allSettled finished', {
@@ -93,7 +127,6 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       autoReply: autoReplyResult.status,
       hubspot: hubspotResult.status,
       ownerOk: ownerResult.status === 'fulfilled' ? ownerResult.value.ok : null,
-      ownerErr: ownerResult.status === 'fulfilled' ? ownerResult.value.error : String(ownerResult.reason || ''),
     })
 
     if (autoReplyResult.status === 'rejected') {
@@ -103,10 +136,8 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       console.error('Failed to push lead to HubSpot:', hubspotResult.reason)
     }
 
-    // Persist owner-notification outcome so the admin /leads UI can surface
-    // gaps. Resend webhooks fill in delivered/bounced/opened/etc. later via
-    // /api/webhooks/resend (correlated by lead_id tag).
-    const ownerUpdate =
+    // Capture owner-notification outcome + HubSpot IDs.
+    const ownerUpdate: Record<string, unknown> =
       ownerResult.status === 'fulfilled' && ownerResult.value.ok
         ? {
             ownerNotifiedAt: new Date(),
@@ -122,6 +153,12 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
                 : ownerResult.value.error || 'unknown error'
             ).slice(0, 500),
           }
+
+    if (hubspotResult.status === 'fulfilled' && hubspotResult.value.ok) {
+      ownerUpdate.hubspotContactId = hubspotResult.value.contactId ?? null
+      ownerUpdate.hubspotCompanyId = hubspotResult.value.companyId ?? null
+      ownerUpdate.hubspotDealId = hubspotResult.value.dealId ?? null
+    }
 
     console.log('[LEAD-DEBUG] writing ownerUpdate', { leadId: lead.id, ownerUpdate })
     await prisma.lead.update({ where: { id: lead.id }, data: ownerUpdate }).catch((e) =>

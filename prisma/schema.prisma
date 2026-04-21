@@ -28,6 +28,14 @@ model Lead {
   ownerNotifyFailedAt         DateTime?
   ownerNotifySuppressedAt     DateTime?
   ownerNotifyError            String?
+  // Lead qualification — set by qualify.ts during submitLead, applied by HubSpot router:
+  qualification               LeadCategory? // SPAM | TEST | VENDOR | OUT_OF_SCOPE | RESIDENTIAL | COMMERCIAL
+  qualificationReason         String?       // human-readable why
+  qualificationConfidence     Float?        // 0..1
+  qualifiedAt                 DateTime?
+  hubspotContactId            String?
+  hubspotCompanyId            String?
+  hubspotDealId               String?
   createdAt                   DateTime  @default(now())
   updatedAt                   DateTime  @updatedAt
 
@@ -35,6 +43,16 @@ model Lead {
   @@index([phone])
   @@index([ownerNotifiedAt])
   @@index([ownerNotifyMessageId])
+  @@index([qualification])
+}
+
+enum LeadCategory {
+  SPAM
+  TEST
+  VENDOR
+  OUT_OF_SCOPE
+  RESIDENTIAL
+  COMMERCIAL
 }
 
 model Testimonial {
