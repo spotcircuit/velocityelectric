@@ -54,6 +54,7 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
         sourcePage: validated.data.sourcePage,
       },
     })
+    console.log('[LEAD-DEBUG] lead.create OK', { leadId: lead.id })
 
     // Send email notification (async, don't wait)
     const leadEmailData = {
@@ -71,6 +72,7 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
     // by Vercel's serverless lifecycle after the Server Action returns —
     // promises in .then() callbacks silently never run. Awaiting adds ~1s to
     // form submission but guarantees the DB capture and HubSpot push complete.
+    console.log('[LEAD-DEBUG] starting Promise.allSettled', { leadId: lead.id })
     const [ownerResult, autoReplyResult, hubspotResult] = await Promise.allSettled([
       sendLeadNotification(leadEmailData, lead.id),
       sendCustomerAutoReply(leadEmailData),
@@ -85,6 +87,14 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
         sourcePage: lead.sourcePage,
       }),
     ])
+    console.log('[LEAD-DEBUG] Promise.allSettled finished', {
+      leadId: lead.id,
+      owner: ownerResult.status,
+      autoReply: autoReplyResult.status,
+      hubspot: hubspotResult.status,
+      ownerOk: ownerResult.status === 'fulfilled' ? ownerResult.value.ok : null,
+      ownerErr: ownerResult.status === 'fulfilled' ? ownerResult.value.error : String(ownerResult.reason || ''),
+    })
 
     if (autoReplyResult.status === 'rejected') {
       console.error('Failed to send customer auto-reply:', autoReplyResult.reason)
@@ -113,9 +123,11 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
             ).slice(0, 500),
           }
 
+    console.log('[LEAD-DEBUG] writing ownerUpdate', { leadId: lead.id, ownerUpdate })
     await prisma.lead.update({ where: { id: lead.id }, data: ownerUpdate }).catch((e) =>
-      console.error('Failed to record notify outcome:', e)
+      console.error('[LEAD-DEBUG] Failed to record notify outcome:', e)
     )
+    console.log('[LEAD-DEBUG] DONE', { leadId: lead.id })
 
     return { success: true }
   } catch (error) {
