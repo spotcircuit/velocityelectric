@@ -67,48 +67,55 @@ export async function submitLead(data: LeadFormData): Promise<SubmitLeadResult> 
       sourcePage: lead.sourcePage,
     }
 
-    // Owner notification: await + persist outcome so the admin /leads UI can
-    // surface notifications that never reached Josh. Tags carry lead_id so the
-    // Resend webhook can update delivery/bounce/click status later.
-    sendLeadNotification(leadEmailData, lead.id)
-      .then(async (result) => {
-        await prisma.lead.update({
-          where: { id: lead.id },
-          data: result.ok
-            ? {
-                ownerNotifiedAt: new Date(),
-                ownerNotifyMessageId: result.messageId ?? null,
-                ownerNotifyError: null,
-              }
-            : { ownerNotifyError: (result.error || 'unknown error').slice(0, 500) },
-        }).catch((e) => console.error('Failed to record notify outcome:', e))
-      })
-      .catch((error) => {
-        console.error('Failed to send lead notification email:', error)
-        prisma.lead.update({
-          where: { id: lead.id },
-          data: { ownerNotifyError: (error instanceof Error ? error.message : String(error)).slice(0, 500) },
-        }).catch((e) => console.error('Failed to record notify failure:', e))
-      })
+    // Run side-effects in parallel and AWAIT them. Fire-and-forget gets killed
+    // by Vercel's serverless lifecycle after the Server Action returns —
+    // promises in .then() callbacks silently never run. Awaiting adds ~1s to
+    // form submission but guarantees the DB capture and HubSpot push complete.
+    const [ownerResult, autoReplyResult, hubspotResult] = await Promise.allSettled([
+      sendLeadNotification(leadEmailData, lead.id),
+      sendCustomerAutoReply(leadEmailData),
+      pushLeadToHubSpot({
+        name: lead.name,
+        phone: lead.phone,
+        email: lead.email,
+        city: lead.city,
+        customerType: validated.data.customerType || null,
+        serviceRequested: lead.serviceRequested,
+        message: lead.message,
+        sourcePage: lead.sourcePage,
+      }),
+    ])
 
-    // Send auto-reply to customer (async, don't wait)
-    sendCustomerAutoReply(leadEmailData).catch((error) => {
-      console.error('Failed to send customer auto-reply:', error)
-    })
+    if (autoReplyResult.status === 'rejected') {
+      console.error('Failed to send customer auto-reply:', autoReplyResult.reason)
+    }
+    if (hubspotResult.status === 'rejected') {
+      console.error('Failed to push lead to HubSpot:', hubspotResult.reason)
+    }
 
-    // Push to HubSpot CRM (async, don't wait)
-    pushLeadToHubSpot({
-      name: lead.name,
-      phone: lead.phone,
-      email: lead.email,
-      city: lead.city,
-      customerType: validated.data.customerType || null,
-      serviceRequested: lead.serviceRequested,
-      message: lead.message,
-      sourcePage: lead.sourcePage,
-    }).catch((error) => {
-      console.error('Failed to push lead to HubSpot:', error)
-    })
+    // Persist owner-notification outcome so the admin /leads UI can surface
+    // gaps. Resend webhooks fill in delivered/bounced/opened/etc. later via
+    // /api/webhooks/resend (correlated by lead_id tag).
+    const ownerUpdate =
+      ownerResult.status === 'fulfilled' && ownerResult.value.ok
+        ? {
+            ownerNotifiedAt: new Date(),
+            ownerNotifyMessageId: ownerResult.value.messageId ?? null,
+            ownerNotifyError: null,
+          }
+        : {
+            ownerNotifyError: (
+              ownerResult.status === 'rejected'
+                ? ownerResult.reason instanceof Error
+                  ? ownerResult.reason.message
+                  : String(ownerResult.reason)
+                : ownerResult.value.error || 'unknown error'
+            ).slice(0, 500),
+          }
+
+    await prisma.lead.update({ where: { id: lead.id }, data: ownerUpdate }).catch((e) =>
+      console.error('Failed to record notify outcome:', e)
+    )
 
     return { success: true }
   } catch (error) {
