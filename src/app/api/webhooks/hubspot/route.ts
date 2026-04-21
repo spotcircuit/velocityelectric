@@ -91,36 +91,99 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid json' }, { status: 400 })
   }
 
+  // Triage signal mapping: when these property values change, mark Lead as triaged.
+  // The actual triage value tag becomes "hubspot:<source>:<value>" so admin UI can
+  // show why a lead got triaged.
+  const triageSignal = (event: HubSpotEvent): string | null => {
+    if (event.subscriptionType === 'deal.propertyChange' && event.propertyName === 'dealstage') {
+      return `dealstage:${event.propertyValue || 'unknown'}`
+    }
+    if (event.subscriptionType === 'contact.propertyChange' && event.propertyName === 'hs_lead_status') {
+      return `lead_status:${event.propertyValue || 'unknown'}`
+    }
+    if (event.subscriptionType === 'contact.propertyChange' && event.propertyName === 'notes_last_contacted') {
+      // Any engagement (email, call, meeting note) updates this — Josh worked the lead.
+      return `engagement`
+    }
+    return null
+  }
+
+  // Find the Lead row matching a HubSpot object — by deal id for deal events,
+  // by contact id for contact events. Returns null if no match (maybe a deal
+  // we didn't create, or one whose Lead was deleted on our side).
+  async function findLeadFor(event: HubSpotEvent) {
+    const objectId = String(event.objectId)
+    if (event.subscriptionType.startsWith('deal.')) {
+      return prisma.lead.findFirst({ where: { hubspotDealId: objectId } })
+    }
+    if (event.subscriptionType.startsWith('contact.')) {
+      return prisma.lead.findFirst({ where: { hubspotContactId: objectId } })
+    }
+    return null
+  }
+
   let triagedCount = 0
+  let cleanedCount = 0
   for (const event of events) {
     try {
-      // Currently we only auto-triage on deal stage changes.
-      if (event.subscriptionType === 'deal.propertyChange' && event.propertyName === 'dealstage') {
-        const dealId = String(event.objectId)
-        const newStage = event.propertyValue || 'unknown'
-        const lead = await prisma.lead.findFirst({ where: { hubspotDealId: dealId } })
-        if (!lead) {
-          console.log(`[HUBSPOT-WEBHOOK] no Lead for dealId=${dealId}, ignoring`)
-          continue
+      // Deletion: clear the matching Lead's HubSpot ID so the admin UI link
+      // doesn't 404. Don't delete the Lead itself — keeps audit trail.
+      if (event.subscriptionType === 'deal.deletion') {
+        const lead = await findLeadFor(event)
+        if (lead) {
+          await prisma.lead.update({
+            where: { id: lead.id },
+            data: { hubspotDealId: null, hubspotCompanyId: null },
+          })
+          cleanedCount += 1
+          console.log(`[HUBSPOT-WEBHOOK] cleaned deal ref on lead ${lead.id} (deal ${event.objectId} deleted in HS)`)
         }
-        // Don't re-triage if already triaged
-        if (lead.triagedAt) {
-          console.log(`[HUBSPOT-WEBHOOK] lead ${lead.id} already triaged, ignoring stage change`)
-          continue
-        }
-        await prisma.lead.update({
-          where: { id: lead.id },
-          data: { triagedAt: new Date(), triagedBy: `hubspot:${newStage}` },
-        })
-        triagedCount += 1
-        console.log(`[HUBSPOT-WEBHOOK] triaged lead ${lead.id} (deal ${dealId} → ${newStage})`)
-      } else {
-        console.log(`[HUBSPOT-WEBHOOK] ignoring event type=${event.subscriptionType} prop=${event.propertyName}`)
+        continue
       }
+      if (event.subscriptionType === 'contact.deletion') {
+        const lead = await findLeadFor(event)
+        if (lead) {
+          await prisma.lead.update({
+            where: { id: lead.id },
+            data: { hubspotContactId: null },
+          })
+          cleanedCount += 1
+          console.log(`[HUBSPOT-WEBHOOK] cleaned contact ref on lead ${lead.id} (contact ${event.objectId} deleted in HS)`)
+        }
+        continue
+      }
+
+      // Property changes that are triage signals
+      const signal = triageSignal(event)
+      if (!signal) {
+        console.log(`[HUBSPOT-WEBHOOK] ignoring ${event.subscriptionType} prop=${event.propertyName}`)
+        continue
+      }
+
+      const lead = await findLeadFor(event)
+      if (!lead) {
+        console.log(`[HUBSPOT-WEBHOOK] no Lead for ${event.subscriptionType} objectId=${event.objectId}`)
+        continue
+      }
+      if (lead.triagedAt) {
+        console.log(`[HUBSPOT-WEBHOOK] lead ${lead.id} already triaged, signal=${signal} ignored`)
+        continue
+      }
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { triagedAt: new Date(), triagedBy: `hubspot:${signal}` },
+      })
+      triagedCount += 1
+      console.log(`[HUBSPOT-WEBHOOK] triaged lead ${lead.id} (signal=${signal})`)
     } catch (err) {
       console.error(`[HUBSPOT-WEBHOOK] error handling event ${event.eventId}:`, err)
     }
   }
 
-  return NextResponse.json({ ok: true, processed: events.length, triaged: triagedCount })
+  return NextResponse.json({
+    ok: true,
+    processed: events.length,
+    triaged: triagedCount,
+    cleaned: cleanedCount,
+  })
 }
